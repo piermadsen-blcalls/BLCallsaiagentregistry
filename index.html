@@ -367,7 +367,6 @@
 <script>
 // ─── CONFIG — update credentials here ────────────────────────────────────────
 const CONFIG = {
-  jiraToken:   '',           // ← paste your Atlassian API token here
   jiraDomain:  'replydev.atlassian.net',
   jiraEmail:   'pier.madsen@buyerlink.com',
   jiraProject: 'MK',
@@ -1050,8 +1049,6 @@ function selType(el, type) {
   document.getElementById('agent-sel-row').style.display = (type==='modify'||type==='bug') ? 'block' : 'none';
 }
 // ─── JIRA TICKET BUILDER ─────────────────────────────────────────────────────
-const JIRA_DOMAIN  = CONFIG.jiraDomain;
-const JIRA_PROJECT = CONFIG.jiraProject;
 
 const TYPE_LABELS = {
   modify:   'Modify agent',
