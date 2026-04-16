@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Agent Registry — Buyerlink</title>
+<title>AI Agent Registry — Buyerlink Calls</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -14,6 +14,9 @@
     --teal: #0F6E56; --teal-bg: #E1F5EE; --amber: #854F0B; --amber-bg: #FAEEDA;
     --coral: #993C1D; --coral-bg: #FAECE7; --blue: #185FA5; --blue-bg: #E6F1FB;
     --gray-bg: #F1EFE8; --purple: #534AB7; --purple-bg: #EEEDFE;
+    --brand-navy: #1A2E4A;
+    --brand-mint: #00C896;
+    --brand-mint-bg: #E6FAF5;
     --serif: 'Instrument Serif', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
     --mono: 'DM Mono', monospace;
@@ -23,11 +26,22 @@
   body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
   .shell { max-width: 1200px; margin: 0 auto; padding: 0 32px 80px; }
 
+  /* Logo bar */
+  .logo-bar { padding: 20px 0 0; display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
+  .logo-mark { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; }
+  .logo-text { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--brand-navy); letter-spacing: 0.2px; }
+  .logo-text span { color: var(--brand-mint); }
+  .logo-divider { width: 1px; height: 16px; background: var(--border-strong); }
+  .logo-product { font-family: var(--sans); font-size: 12px; color: var(--text-3); }
+
   /* Header */
-  .site-header { padding: 48px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-  .header-left h1 { font-family: var(--serif); font-size: 42px; font-weight: 400; line-height: 1.1; letter-spacing: -0.5px; }
+  .site-header { padding: 20px 0 36px; border-bottom: 1px solid var(--border); margin-bottom: 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .header-left h1 { font-family: var(--serif); font-size: 38px; font-weight: 400; line-height: 1.1; letter-spacing: -0.5px; }
   .header-left h1 em { font-style: italic; color: var(--text-2); }
-  .header-left p { font-size: 14px; color: var(--text-2); margin-top: 8px; line-height: 1.6; max-width: 460px; }
+  .header-left p { font-size: 14px; color: var(--text-2); margin-top: 8px; line-height: 1.6; max-width: 480px; }
+  .data-freshness { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--brand-navy); background: var(--brand-mint-bg); border-radius: 100px; padding: 4px 10px; }
+  .freshness-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-mint); flex-shrink: 0; }
   .header-stats { display: flex; gap: 32px; flex-shrink: 0; }
   .stat { text-align: right; }
   .stat-num { font-family: var(--serif); font-size: 32px; color: var(--text); line-height: 1; }
@@ -36,7 +50,7 @@
   /* Tabs */
   .nav-tabs { display: flex; gap: 0; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
   .nav-tab { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text-2); background: none; border: none; padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; }
-  .nav-tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .nav-tab.active { color: var(--brand-navy); border-bottom-color: var(--brand-mint); }
   .nav-tab:hover:not(.active) { color: var(--text); }
 
   /* Toolbar */
@@ -48,13 +62,13 @@
   .search-input:focus { border-color: var(--text); }
   .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 13px; pointer-events: none; }
   .filter-pill { font-family: var(--sans); font-size: 12px; padding: 5px 13px; border-radius: 100px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2); cursor: pointer; transition: all 0.12s; }
-  .filter-pill.active { background: var(--text); color: var(--surface); border-color: var(--text); }
-  .filter-pill:hover:not(.active) { border-color: var(--text); color: var(--text); }
+  .filter-pill.active { background: var(--brand-navy); color: var(--surface); border-color: var(--brand-navy); }
+  .filter-pill:hover:not(.active) { border-color: var(--brand-navy); color: var(--brand-navy); }
   .sort-select { font-family: var(--sans); font-size: 12px; padding: 5px 28px 5px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-2); cursor: pointer; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 9px center; }
   .sort-label { font-size: 11px; color: var(--text-3); }
   .preset-btn { font-family: var(--sans); font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 4px; border: none; background: transparent; color: var(--text-2); cursor: pointer; transition: all 0.12s; }
-  .preset-btn.active { background: var(--text); color: var(--surface); }
-  .preset-btn:hover:not(.active) { color: var(--text); }
+  .preset-btn.active { background: var(--brand-navy); color: var(--surface); }
+  .preset-btn:hover:not(.active) { color: var(--brand-navy); }
 
   /* Grid */
   .agents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
@@ -62,7 +76,7 @@
   /* Card */
   .agent-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; position: relative; animation: fadeIn 0.2s ease both; }
   .agent-card:hover { border-color: var(--border-strong); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-  .agent-card.open { border-color: var(--text); box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+  .agent-card.open { border-color: var(--brand-navy); box-shadow: 0 2px 20px rgba(26,46,74,0.1); }
   .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
   .card-vtag { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
   .card-status { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 100px; }
@@ -86,7 +100,7 @@
   .v-other { background: var(--gray-bg); color: var(--text-2); }
 
   /* Drawer */
-  .detail-drawer { background: var(--surface); border: 1px solid var(--text); border-radius: var(--radius); margin-bottom: 20px; animation: fadeIn 0.18s ease both; }
+  .detail-drawer { background: var(--surface); border: 1px solid var(--brand-navy); border-radius: var(--radius); margin-bottom: 20px; animation: fadeIn 0.18s ease both; }
   .drawer-inner { padding: 28px 32px; }
   .drawer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; gap: 16px; }
   .drawer-title { font-family: var(--serif); font-size: 24px; font-weight: 400; }
@@ -127,8 +141,8 @@
   /* CTA */
   .drawer-cta { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .drawer-cta p { font-size: 13px; color: var(--text-2); }
-  .btn-primary { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: var(--radius-sm); background: var(--text); color: var(--surface); border: none; cursor: pointer; transition: opacity 0.12s; text-decoration: none; display: inline-block; }
-  .btn-primary:hover { opacity: 0.82; }
+  .btn-primary { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: var(--radius-sm); background: var(--brand-navy); color: var(--surface); border: none; cursor: pointer; transition: opacity 0.12s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { opacity: 0.85; }
 
   /* Request form */
   .request-view { max-width: 600px; }
@@ -148,8 +162,8 @@
   .type-card.selected { border: 1.5px solid var(--text); background: var(--bg); }
   .type-card-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
   .type-card-desc { font-size: 11px; color: var(--text-2); line-height: 1.4; }
-  .form-submit { background: var(--text); color: var(--surface); border: none; font-family: var(--sans); font-size: 14px; font-weight: 500; padding: 11px 28px; border-radius: var(--radius-sm); cursor: pointer; transition: opacity 0.12s; }
-  .form-submit:hover { opacity: 0.82; }
+  .form-submit { background: var(--brand-navy); color: var(--surface); border: none; font-family: var(--sans); font-size: 14px; font-weight: 500; padding: 11px 28px; border-radius: var(--radius-sm); cursor: pointer; transition: opacity 0.12s; }
+  .form-submit:hover { opacity: 0.85; }
   .success-msg { display: none; background: var(--teal-bg); color: var(--teal); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
 
   /* Update data panel */
@@ -161,8 +175,8 @@
   .update-panel p { font-size: 13px; color: var(--text-2); margin-bottom: 16px; line-height: 1.6; }
   .update-textarea { width: 100%; font-family: var(--mono); font-size: 12px; color: var(--text); background: var(--bg); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 12px; min-height: 160px; resize: vertical; outline: none; transition: border-color 0.15s; }
   .update-textarea:focus { border-color: var(--text); }
-  .update-btn { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: var(--radius-sm); background: var(--text); color: var(--surface); border: none; cursor: pointer; margin-top: 12px; transition: opacity 0.12s; }
-  .update-btn:hover { opacity: 0.82; }
+  .update-btn { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: var(--radius-sm); background: var(--brand-navy); color: var(--surface); border: none; cursor: pointer; margin-top: 12px; transition: opacity 0.12s; }
+  .update-btn:hover { opacity: 0.85; }
   .update-results { margin-top: 16px; font-size: 13px; line-height: 1.7; }
   .update-ok { color: var(--teal); }
   .update-warn { color: var(--amber); }
@@ -195,10 +209,25 @@
 <body>
 <div class="shell">
 
+  <!-- Logo bar -->
+  <div class="logo-bar">
+    <div class="logo-mark">
+      <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="#1A2E4A"/>
+        <path d="M8 8h8c2.2 0 4 1.8 4 4s-1.8 4-4 4H8V8z" fill="#00C896"/>
+        <path d="M8 16h9c2.5 0 4.5 2 4.5 4.5S19.5 25 17 25H8V16z" fill="white" opacity="0.9"/>
+      </svg>
+      <span class="logo-text">buyerlink<span>calls</span></span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-product">AI Agent Registry</span>
+  </div>
+
   <header class="site-header">
     <div class="header-left">
-      <h1>AI Agent Registry <em>— Buyerlink</em></h1>
-      <p id="header-desc">All deployed voice AI agents, their qualification logic, and exactly how calls reach them. Performance data: 30-day window.</p>
+      <h1>Agent Registry <em>— voice AI</em></h1>
+      <p id="header-desc">All deployed voice AI agents, their qualification logic, and exactly how calls reach them.</p>
+      <div class="data-freshness"><div class="freshness-dot"></div><span id="freshness-label">Loading...</span></div>
     </div>
     <div class="header-stats">
       <div class="stat"><div class="stat-num" id="stat-agents">29</div><div class="stat-label">total agents</div></div>
@@ -264,12 +293,12 @@
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
           <input type="password" id="jira-token-input" placeholder="Paste API token..." style="font-family:var(--mono);font-size:12px;padding:7px 10px;border:1px solid rgba(133,79,11,0.3);border-radius:var(--radius-sm);background:white;color:var(--text);outline:none;width:220px;">
-          <button onclick="connectJira()" style="font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius-sm);background:var(--amber);color:white;border:none;cursor:pointer;">Connect</button>
+          <button onclick="connectJira()" style="font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius-sm);background:var(--brand-navy);color:white;border:none;cursor:pointer;">Connect</button>
         </div>
       </div>
-      <div id="jira-connected" style="display:none;background:var(--teal-bg);border-radius:var(--radius);padding:12px 16px;margin-bottom:28px;font-size:13px;color:var(--teal);display:none;align-items:center;justify-content:space-between;">
+      <div id="jira-connected" style="display:none;background:var(--brand-mint-bg);border-radius:var(--radius);padding:12px 16px;margin-bottom:28px;font-size:13px;color:var(--brand-navy);align-items:center;justify-content:space-between;">
         <span>✓ Connected to replydev.atlassian.net · MK board</span>
-        <button onclick="disconnectJira()" style="font-size:11px;color:var(--teal);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--sans);">disconnect</button>
+        <button onclick="disconnectJira()" style="font-size:11px;color:var(--brand-navy);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--sans);">disconnect</button>
       </div>
 
       <div class="request-intro">
@@ -803,8 +832,6 @@ function updateDataWindowLabels() {
   const w = activeRange;
   document.getElementById('stat-calls-label').textContent   = 'calls / ' + w.short;
   document.getElementById('stat-revenue-label').textContent = 'revenue / ' + w.short;
-  document.getElementById('header-desc').textContent =
-    'All deployed voice AI agents, their qualification logic, and exactly how calls reach them. Performance data: ' + w.label + '.';
   document.getElementById('last-updated').textContent = 'Data window: ' + w.label;
 }
 
@@ -1268,10 +1295,14 @@ async function loadFromSupabase() {
   AGENTS.forEach(a => { a.raw_calls=0; a.paid_calls=0; a.revenue=0; a.margin=0; a.conversion=0; a.avg_duration=null; });
 
   try {
-    const rows = await sbFetch(
-      `agent_metrics?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date` +
-      `&call_date=gte.${startISO}&call_date=lte.${endISO}`
-    );
+    const [rows, latest] = await Promise.all([
+      sbFetch(
+        `agent_metrics?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date` +
+        `&call_date=gte.${startISO}&call_date=lte.${endISO}`
+      ),
+      sbFetch('agent_metrics?select=call_date&order=call_date.desc&limit=1')
+    ]);
+
     if (rows && rows.length) {
       rows.forEach(row => {
         const match = AGENTS.find(a => normalize(a.ivrName) === normalize(row.ivr_name));
@@ -1285,8 +1316,18 @@ async function loadFromSupabase() {
         }
       });
     }
+
+    // Update freshness badge
+    if (latest && latest.length && latest[0].call_date) {
+      const d = new Date(latest[0].call_date + 'T00:00:00');
+      document.getElementById('freshness-label').textContent = 'Data current through ' + fmtDate(d);
+    } else {
+      document.getElementById('freshness-label').textContent = 'No data loaded yet';
+    }
+
   } catch(e) {
     console.warn('Supabase load failed:', e.message);
+    document.getElementById('freshness-label').textContent = 'Could not load data';
   }
 
   recomputeStats();
@@ -1310,17 +1351,31 @@ async function saveToSupabase(rows) {
 
   if (!payload.length) throw new Error('No valid dates in export — check call_date column.');
 
-  await sbFetch('agent_metrics?on_conflict=ivr_name,call_date', {
-    method: 'POST',
-    headers: { 'Prefer': 'resolution=merge-duplicates' },
-    body: JSON.stringify(payload)
-  });
+  // Chunk into batches of 500 to stay within Supabase request limits
+  const CHUNK = 500;
+  for (let i = 0; i < payload.length; i += CHUNK) {
+    const batch = payload.slice(i, i + CHUNK);
+    await sbFetch('agent_metrics?on_conflict=ivr_name,call_date', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates' },
+      body: JSON.stringify(batch)
+    });
+  }
 }
 
 // ─── BOOT ────────────────────────────────────────────────────────────────────
 recomputeStats();
 populateAgentSelect();
 applyFilters();
+
+// Auto-connect Jira if token is hardcoded in config
+if (CONFIG.jiraToken) {
+  jiraToken = CONFIG.jiraToken;
+  document.getElementById('jira-setup').style.display = 'none';
+  document.getElementById('jira-connected').style.display = 'flex';
+}
+
+// Default to last 30 days — triggers Supabase load
 setTimeout(() => setPreset(30, document.querySelector('.preset-btn[onclick*="30"]')), 0);
 </script>
 </body>
