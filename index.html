@@ -233,6 +233,7 @@
       <div class="stat"><div class="stat-num" id="stat-agents">29</div><div class="stat-label">total agents</div></div>
       <div class="stat"><div class="stat-num" id="stat-calls">—</div><div class="stat-label" id="stat-calls-label">calls / 30d</div></div>
       <div class="stat"><div class="stat-num" id="stat-revenue">—</div><div class="stat-label" id="stat-revenue-label">revenue / 30d</div></div>
+      <div class="stat"><div class="stat-num" id="stat-margin">—</div><div class="stat-label" id="stat-margin-label">margin / 30d</div></div>
     </div>
   </header>
 
@@ -832,6 +833,7 @@ function updateDataWindowLabels() {
   const w = activeRange;
   document.getElementById('stat-calls-label').textContent   = 'calls / ' + w.short;
   document.getElementById('stat-revenue-label').textContent = 'revenue / ' + w.short;
+  document.getElementById('stat-margin-label').textContent  = 'margin / ' + w.short;
   document.getElementById('last-updated').textContent = 'Data window: ' + w.label;
 }
 
@@ -839,9 +841,11 @@ function updateDataWindowLabels() {
 function recomputeStats() {
   const totalCalls   = AGENTS.reduce((s,a) => s + a.raw_calls, 0);
   const totalRevenue = AGENTS.reduce((s,a) => s + a.revenue,   0);
+  const totalMargin  = AGENTS.reduce((s,a) => s + a.margin,    0);
   document.getElementById('stat-agents').textContent  = AGENTS.length;
   document.getElementById('stat-calls').textContent   = totalCalls.toLocaleString();
   document.getElementById('stat-revenue').textContent = '$' + (totalRevenue/1000).toFixed(1) + 'k';
+  document.getElementById('stat-margin').textContent  = '$' + (totalMargin/1000).toFixed(1) + 'k';
 }
 
 // Populate request form agent selector
