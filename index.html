@@ -1011,13 +1011,29 @@ function setFilter(v, el) {
   applyFilters();
 }
 
+let savedScrollY = 0;
+
 function toggleAgent(idx) {
   const drawer = document.getElementById('drawer-container');
-  if (openAgent === idx) { openAgent = null; drawer.innerHTML = ''; applyFilters(); return; }
+  if (openAgent === idx) {
+    openAgent = null;
+    drawer.innerHTML = '';
+    applyFilters();
+    window.scrollTo({ top: savedScrollY, behavior: 'smooth' });
+    return;
+  }
+  savedScrollY = window.scrollY;
   openAgent = idx;
   applyFilters();
   drawer.innerHTML = renderDrawer(AGENTS[idx]);
-  drawer.scrollIntoView({behavior:'smooth', block:'nearest'});
+  // After render, scroll just enough so the bottom of the drawer is visible
+  requestAnimationFrame(() => {
+    const rect = drawer.getBoundingClientRect();
+    const bottomGap = rect.bottom - window.innerHeight;
+    if (bottomGap > 0) {
+      window.scrollBy({ top: bottomGap + 24, behavior: 'smooth' });
+    }
+  });
 }
 
 function closeDrawer(e) {
@@ -1025,6 +1041,7 @@ function closeDrawer(e) {
   openAgent = null;
   document.getElementById('drawer-container').innerHTML = '';
   applyFilters();
+  window.scrollTo({ top: savedScrollY, behavior: 'smooth' });
 }
 
 // ─── TABS / FORM ─────────────────────────────────────────────────────────────
