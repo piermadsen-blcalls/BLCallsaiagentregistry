@@ -1116,14 +1116,36 @@ function processUpdate() {
   const raw = document.getElementById('update-paste').value.trim();
   if (!raw) { alert('Nothing to process — paste in your BigQuery export first.'); return; }
 
-  // Parse — tab separated, cols: Row(0), ai_ivr(1), week_start(2), Raw Calls(3), Paid Calls(4),
-  // Conversion(5), Avg Duration(6), Total Cost(7), Total Revenue(8), Direct Margin(9)
   const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) { alert('Not enough data rows found.'); return; }
 
-  // Skip header row (first line if it contains 'ai_ivr' or 'Row')
-  const dataLines = lines.filter(l => {
-    const first = l.split('\t')[0].toLowerCase();
-    return first !== 'row' && first !== 'ai_ivr' && !isNaN(parseFloat(first));
+  // Parse header row to get column indices dynamically
+  const headerCols = lines[0].split('\t').map(c => c.trim().toLowerCase());
+  const idx = {
+    ivr:        headerCols.findIndex(h => h.includes('ai_ivr') || h.includes('ivr_name')),
+    week:       headerCols.findIndex(h => h.includes('week_start')),
+    raw_calls:  headerCols.findIndex(h => h.includes('raw calls') || h === 'raw_calls'),
+    paid_calls: headerCols.findIndex(h => h.includes('paid calls') || h === 'paid_calls'),
+    conversion: headerCols.findIndex(h => h.includes('conversion')),
+    avg_dur:    headerCols.findIndex(h => h.includes('avg') && h.includes('duration') || h.includes('avg_ivr')),
+    revenue:    headerCols.findIndex(h => h.includes('total revenue') || h === 'total_revenue'),
+    margin:     headerCols.findIndex(h => h.includes('direct margin') || h === 'direct_margin'),
+  };
+
+  // Fallback to positional if headers not found (Row, ai_ivr, week_start, Raw, Paid, Conv, Dur, Cost, Rev, Margin)
+  if (idx.ivr === -1)        idx.ivr        = 1;
+  if (idx.week === -1)       idx.week       = 2;
+  if (idx.raw_calls === -1)  idx.raw_calls  = 3;
+  if (idx.paid_calls === -1) idx.paid_calls = 4;
+  if (idx.conversion === -1) idx.conversion = 5;
+  if (idx.avg_dur === -1)    idx.avg_dur    = 6;
+  if (idx.revenue === -1)    idx.revenue    = 8;
+  if (idx.margin === -1)     idx.margin     = 9;
+
+  // Skip header row
+  const dataLines = lines.slice(1).filter(l => {
+    const first = l.split('\t')[0].toLowerCase().trim();
+    return first !== 'row' && first !== 'ai_ivr' && l.trim().length > 0;
   });
 
   const results = document.getElementById('update-results');
@@ -1137,15 +1159,14 @@ function processUpdate() {
     const cols = line.split('\t').map(c => c.trim());
     if (cols.length < 9) return;
 
-    const ivrName    = cols[1];
-    const weekStart  = cols[2];
-    const raw_calls  = Math.round(parseFloat(cols[3]) || 0);
-    const paid_calls = Math.round(parseFloat(cols[4]) || 0);
-    const conversion = parseFloat(cols[5]) || 0;
-    const avg_dur    = cols[6] === 'null' || cols[6] === '' ? null : parseFloat(cols[6]) || null;
-    // cols[7] = total_cost (skip)
-    const revenue    = parseFloat(cols[8]) || 0;
-    const margin     = parseFloat(cols[9]) || 0;
+    const ivrName    = cols[idx.ivr];
+    const weekStart  = cols[idx.week];
+    const raw_calls  = Math.round(parseFloat(cols[idx.raw_calls])  || 0);
+    const paid_calls = Math.round(parseFloat(cols[idx.paid_calls]) || 0);
+    const conversion = parseFloat(cols[idx.conversion]) || 0;
+    const avg_dur    = !cols[idx.avg_dur] || cols[idx.avg_dur] === 'null' ? null : parseFloat(cols[idx.avg_dur]) || null;
+    const revenue    = parseFloat(cols[idx.revenue]) || 0;
+    const margin     = parseFloat(cols[idx.margin])  || 0;
 
     if (weekStart && weekStart !== 'null' && weekStart !== '') {
       const d = new Date(weekStart + 'T00:00:00');
