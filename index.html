@@ -286,28 +286,10 @@
   <div id="tab-request" class="tab-pane">
     <div class="request-view">
 
-      <!-- Jira token setup -->
-      <div id="jira-setup" style="background:var(--amber-bg);border-radius:var(--radius);padding:16px 20px;margin-bottom:28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:200px;">
-          <div style="font-size:13px;font-weight:500;color:var(--amber);margin-bottom:4px;">Jira not connected</div>
-          <div style="font-size:12px;color:var(--amber);">Paste your Atlassian API token to submit requests directly to the MK board.</div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
-          <input type="password" id="jira-token-input" placeholder="Paste API token..." style="font-family:var(--mono);font-size:12px;padding:7px 10px;border:1px solid rgba(133,79,11,0.3);border-radius:var(--radius-sm);background:white;color:var(--text);outline:none;width:220px;">
-          <button onclick="connectJira()" style="font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius-sm);background:var(--brand-navy);color:white;border:none;cursor:pointer;">Connect</button>
-        </div>
-      </div>
-      <div id="jira-connected" style="display:none;background:var(--brand-mint-bg);border-radius:var(--radius);padding:12px 16px;margin-bottom:28px;font-size:13px;color:var(--brand-navy);align-items:center;justify-content:space-between;">
-        <span>✓ Connected to replydev.atlassian.net · MK board</span>
-        <button onclick="disconnectJira()" style="font-size:11px;color:var(--brand-navy);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--sans);">disconnect</button>
-      </div>
-
       <div class="request-intro">
         <h2>Request a change</h2>
-        <p>Need to update an agent's script, add a routing path, report an issue, or spin up a new agent? Submit here and it'll go straight to the MK Jira board.</p>
+        <p>Fill out the form below. We'll build your Jira ticket for you — then one click opens it in Jira with everything pre-filled.</p>
       </div>
-      <div class="success-msg" id="success-msg">Got it — Jira task created. Check the MK board for the new issue.</div>
-      <div class="success-msg" id="success-msg-fallback" style="background:var(--amber-bg);color:var(--amber);">Request noted locally — connect Jira to submit directly to the board.</div>
 
       <div class="form-section">
         <label class="form-label">What kind of change?</label>
@@ -331,7 +313,35 @@
         <div class="form-hint">Be specific — buyer name, call scenario, what's happening vs. what should happen.</div>
         <textarea class="form-textarea" id="req-desc" placeholder="e.g. 'Buyer X is seeing unqualified calls — agent should confirm homeownership before transferring.'"></textarea>
       </div>
-      <button class="form-submit" id="submit-btn" onclick="submitRequest()">Submit request</button>
+      <button class="form-submit" id="submit-btn" onclick="submitRequest()">Generate Jira ticket body →</button>
+
+      <!-- Ticket preview -->
+      <div id="ticket-preview" style="display:none;margin-top:28px;border:1px solid var(--brand-navy);border-radius:var(--radius);overflow:hidden;">
+        <div style="background:var(--brand-navy);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:13px;font-weight:500;color:white;margin-bottom:2px;">Your ticket is ready — add it to the To Do column</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.6);">Open the MK board, click + Create, and paste the content below.</div>
+          </div>
+          <a href="https://replydev.atlassian.net/jira/core/projects/MK/board?filter=&groupBy=status" target="_blank" style="font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius-sm);background:var(--brand-mint);color:var(--brand-navy);text-decoration:none;white-space:nowrap;">Open MK board ↗</a>
+        </div>
+        <div style="padding:16px 18px;background:var(--surface);">
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <div style="font-size:10px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);">Summary</div>
+              <button onclick="copyField('preview-summary', this)" style="font-family:var(--sans);font-size:11px;color:var(--text-2);background:none;border:1px solid var(--border-strong);border-radius:4px;padding:2px 8px;cursor:pointer;">Copy</button>
+            </div>
+            <div id="preview-summary" style="font-size:14px;font-weight:500;color:var(--text);background:var(--bg);border-radius:var(--radius-sm);padding:8px 10px;"></div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <div style="font-size:10px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);">Description</div>
+              <button onclick="copyField('preview-desc', this)" style="font-family:var(--sans);font-size:11px;color:var(--text-2);background:none;border:1px solid var(--border-strong);border-radius:4px;padding:2px 8px;cursor:pointer;">Copy</button>
+            </div>
+            <div id="preview-desc" style="font-size:13px;color:var(--text-2);white-space:pre-line;line-height:1.6;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -357,7 +367,7 @@
 <script>
 // ─── CONFIG — update credentials here ────────────────────────────────────────
 const CONFIG = {
-  jiraToken:   'ATATT3xFfGF0jVTZE2gMkr_hkX1wojXz5DcqKyV8I0NtNFHHiwU9ptEEn56qETn-yhwlVhnK2VdGEpNLudkP_RSJi5Tladbv3UhuLDxEMMdLcB1c6k8xOXEdIgbkPTGNNpqOYg5nxyAy4lnQK6OyWg6zWL6AmQ_tKjP5zAM8C941VU-nb-87gSE=98694142',           // ← paste your Atlassian API token here
+  jiraToken:   '',           // ← paste your Atlassian API token here
   jiraDomain:  'replydev.atlassian.net',
   jiraEmail:   'pier.madsen@buyerlink.com',
   jiraProject: 'MK',
@@ -1039,105 +1049,49 @@ function selType(el, type) {
   el.classList.add('selected');
   document.getElementById('agent-sel-row').style.display = (type==='modify'||type==='bug') ? 'block' : 'none';
 }
-// ─── JIRA ─────────────────────────────────────────────────────────────────────
+// ─── JIRA TICKET BUILDER ─────────────────────────────────────────────────────
 const JIRA_DOMAIN  = CONFIG.jiraDomain;
-const JIRA_EMAIL   = CONFIG.jiraEmail;
 const JIRA_PROJECT = CONFIG.jiraProject;
-let jiraToken = CONFIG.jiraToken || null;
-
-function connectJira() {
-  const t = document.getElementById('jira-token-input').value.trim();
-  if (!t) { alert('Paste your API token first.'); return; }
-  jiraToken = t;
-  document.getElementById('jira-setup').style.display = 'none';
-  const connected = document.getElementById('jira-connected');
-  connected.style.display = 'flex';
-}
-
-function disconnectJira() {
-  jiraToken = null;
-  document.getElementById('jira-token-input').value = '';
-  document.getElementById('jira-setup').style.display = 'flex';
-  document.getElementById('jira-connected').style.display = 'none';
-}
 
 const TYPE_LABELS = {
-  modify: 'Modify agent',
-  new: 'New agent request',
-  bug: 'Issue report',
+  modify:   'Modify agent',
+  new:      'New agent request',
+  bug:      'Issue report',
   question: 'Question'
 };
 
-async function submitRequest() {
-  const name    = document.getElementById('req-name').value.trim();
-  const desc    = document.getElementById('req-desc').value.trim();
-  const agent   = document.getElementById('req-agent').value;
+function submitRequest() {
+  const name  = document.getElementById('req-name').value.trim();
+  const desc  = document.getElementById('req-desc').value.trim();
+  const agent = document.getElementById('req-agent').value;
   if (!name || !desc) { alert('Please fill in your name and a description.'); return; }
 
   const typeLabel = TYPE_LABELS[selTypeVal] || selTypeVal;
-  const agentLine = agent ? `*Agent:* ${agent}\n` : '';
   const summary   = agent
     ? `[${typeLabel}] ${agent}`
     : `[${typeLabel}] ${desc.slice(0, 60)}${desc.length > 60 ? '…' : ''}`;
-  const fullDesc  = `*Submitted by:* ${name}\n*Type:* ${typeLabel}\n${agentLine}\n${desc}`;
+  const fullDesc  = `Submitted by: ${name}\nType: ${typeLabel}${agent ? '\nAgent: ' + agent : ''}\n\n${desc}`;
 
-  const btn = document.getElementById('submit-btn');
-  btn.textContent = 'Submitting…'; btn.disabled = true;
-
-  if (jiraToken) {
-    try {
-      const creds = btoa(`${JIRA_EMAIL}:${jiraToken}`);
-      const res = await fetch(`https://${JIRA_DOMAIN}/rest/api/3/issue`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${creds}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          fields: {
-            project: { key: JIRA_PROJECT },
-            summary,
-            description: {
-              type: 'doc', version: 1,
-              content: [{
-                type: 'paragraph',
-                content: [{ type: 'text', text: fullDesc }]
-              }]
-            },
-            issuetype: { name: 'Task' }
-          }
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const issueKey = data.key;
-        const msg = document.getElementById('success-msg');
-        msg.innerHTML = `✓ Jira task <a href="https://${JIRA_DOMAIN}/browse/${issueKey}" target="_blank" style="color:var(--teal);font-weight:500;">${issueKey}</a> created on the MK board.`;
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 10000);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert(`Jira error ${res.status}: ${err.errorMessages?.join(', ') || err.errors ? JSON.stringify(err.errors) : 'Unknown error. Check your token and project key.'}`);
-      }
-    } catch(e) {
-      alert('Could not reach Jira — check your network connection.\n\n' + e.message);
-    }
-  } else {
-    // No token — show fallback
-    const msg = document.getElementById('success-msg-fallback');
-    msg.style.display = 'block';
-    setTimeout(() => msg.style.display = 'none', 7000);
-  }
-
-  // Reset form
-  document.getElementById('req-name').value = '';
-  document.getElementById('req-desc').value = '';
-  document.getElementById('req-agent').selectedIndex = 0;
-  btn.textContent = 'Submit request'; btn.disabled = false;
+  // Show preview
+  document.getElementById('preview-summary').textContent = summary;
+  document.getElementById('preview-desc').textContent    = fullDesc;
+  document.getElementById('ticket-preview').style.display = 'block';
+  document.getElementById('ticket-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+function copyField(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--brand-mint)';
+    btn.style.borderColor = 'var(--brand-mint)';
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
 
 // ─── UPDATE DATA ─────────────────────────────────────────────────────────────
 function toggleUpdatePanel() {
@@ -1371,14 +1325,6 @@ async function saveToSupabase(rows) {
 recomputeStats();
 populateAgentSelect();
 applyFilters();
-
-// Auto-connect Jira if token is hardcoded in config
-if (CONFIG.jiraToken) {
-  jiraToken = CONFIG.jiraToken;
-  document.getElementById('jira-setup').style.display = 'none';
-  document.getElementById('jira-connected').style.display = 'flex';
-}
-
 // Default to last 30 days — triggers Supabase load
 setTimeout(() => setPreset(30, document.querySelector('.preset-btn[onclick*="30"]')), 0);
 </script>
