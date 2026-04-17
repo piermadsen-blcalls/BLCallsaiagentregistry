@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
- <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Agent Registry — Buyerlink Calls</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -922,7 +919,34 @@ function renderDrawer(a) {
     '<div class="canoe-none">No qualification data on record</div>';
 
   const cv = a.conversion > 0 ? (a.conversion*100).toFixed(1)+'%' : '—';
-  const dur = a.avg_duration ? Math.round(a.avg_duration)+'s' : '—';
+
+  // Publisher traffic breakdown
+  const pubs = a.pubBreakdown || [];
+  const pubRows = pubs.length ? pubs.map(p => `<tr>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td>
+  </tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
+
+  const pubTable = `<table class="canoe-table">
+    <thead><tr><th>Publisher</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead>
+    <tbody>${pubRows}</tbody>
+  </table>${pubs.length ? `<div class="canoe-count">top ${pubs.length} by volume</div>` : ''}`;
+
+  // Advertiser breakdown
+  const advs = a.advBreakdown || [];
+  const advRows = advs.length ? advs.map(p => `<tr>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td>
+    <td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td>
+  </tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
+
+  const advTable = `<table class="canoe-table">
+    <thead><tr><th>Advertiser</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead>
+    <tbody>${advRows}</tbody>
+  </table>${advs.length ? `<div class="canoe-count">top ${advs.length} by revenue</div>` : ''}`;
 
   return `<div class="detail-drawer">
     <div class="drawer-inner">
@@ -949,6 +973,21 @@ function renderDrawer(a) {
           <div class="dsec">
             <div class="dsec-title">IVR Targets — After Listing Search</div>
             ${ivrTable}
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-sections" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+        <div class="drawer-col">
+          <div class="dsec">
+            <div class="dsec-title">Publishers sending traffic — ${activeRange.label}</div>
+            ${pubTable}
+          </div>
+        </div>
+        <div class="drawer-col">
+          <div class="dsec">
+            <div class="dsec-title">Advertisers buying calls — ${activeRange.label}</div>
+            ${advTable}
           </div>
         </div>
       </div>
@@ -1138,6 +1177,8 @@ function processUpdate() {
   const idx = {
     ivr:        headerCols.findIndex(h => h === 'ivr_name' || h === 'ai_ivr' || h.includes('ivr_name')),
     date:       headerCols.findIndex(h => h === 'call_date' || h === 'week_start'),
+    publisher:  headerCols.findIndex(h => h === 'publisher_name'),
+    advertiser: headerCols.findIndex(h => h === 'advertiser_name'),
     raw_calls:  headerCols.findIndex(h => h === 'raw_calls' || h.includes('raw calls')),
     paid_calls: headerCols.findIndex(h => h === 'paid_calls' || h.includes('paid calls')),
     conversion: headerCols.findIndex(h => h === 'conversion' || h.includes('conversion')),
@@ -1159,25 +1200,28 @@ function processUpdate() {
   let updated = [], newAgents = [];
 
   dataLines.forEach(line => {
-    const cols     = line.split('\t').map(c => c.trim());
-    const ivrName  = idx.ivr  >= 0 ? cols[idx.ivr]  : null;
-    const callDate = idx.date >= 0 ? parseDate(cols[idx.date]) : null;
-    const raw_calls  = Math.round(parseFloat(cols[idx.raw_calls])  || 0);
-    const paid_calls = Math.round(parseFloat(cols[idx.paid_calls]) || 0);
-    const conversion = parseFloat(cols[idx.conversion]) || 0;
-    const avgVal     = idx.avg_dur >= 0 ? cols[idx.avg_dur] : null;
-    const avg_dur    = !avgVal || avgVal === 'null' || avgVal === '' ? null : parseFloat(avgVal) || null;
-    const revenue    = parseFloat(cols[idx.revenue]) || 0;
-    const margin     = parseFloat(cols[idx.margin])  || 0;
+    const cols          = line.split('\t').map(c => c.trim());
+    const ivrName       = idx.ivr        >= 0 ? cols[idx.ivr]        : null;
+    const callDate      = idx.date       >= 0 ? parseDate(cols[idx.date]) : null;
+    const publisherName = idx.publisher  >= 0 ? (cols[idx.publisher]  || null) : null;
+    const advertiserName= idx.advertiser >= 0 ? (cols[idx.advertiser] || null) : null;
+    const raw_calls     = Math.round(parseFloat(cols[idx.raw_calls])  || 0);
+    const paid_calls    = Math.round(parseFloat(cols[idx.paid_calls]) || 0);
+    const conversion    = parseFloat(cols[idx.conversion]) || 0;
+    const avgVal        = idx.avg_dur >= 0 ? cols[idx.avg_dur] : null;
+    const avg_dur       = !avgVal || avgVal === 'null' || avgVal === '' ? null : parseFloat(avgVal) || null;
+    const revenue       = parseFloat(cols[idx.revenue]) || 0;
+    const margin        = parseFloat(cols[idx.margin])  || 0;
 
     if (!ivrName) return;
-    payload.push({ ivrName, callDate, raw_calls, paid_calls, conversion, avg_dur, revenue, margin });
+    payload.push({ ivrName, callDate, publisherName, advertiserName, raw_calls, paid_calls, conversion, avg_dur, revenue, margin });
 
     const match = AGENTS.find(a => normalize(a.ivrName) === normalize(ivrName));
     if (match) {
       if (!match._updated) {
         match.raw_calls=0; match.paid_calls=0; match.revenue=0; match.margin=0;
         match.conversion=0; match.avg_duration=null; match._updated=true;
+        match._pubMap={}; match._advMap={};
       }
       match.raw_calls  += raw_calls;
       match.paid_calls += paid_calls;
@@ -1185,6 +1229,21 @@ function processUpdate() {
       match.margin     += margin;
       match.conversion  = conversion;
       match.avg_duration = avg_dur;
+
+      // Build pub/adv breakdowns for preview
+      if (publisherName) {
+        if (!match._pubMap[publisherName]) match._pubMap[publisherName] = { raw_calls:0, paid_calls:0, revenue:0 };
+        match._pubMap[publisherName].raw_calls  += raw_calls;
+        match._pubMap[publisherName].paid_calls += paid_calls;
+        match._pubMap[publisherName].revenue    += revenue;
+      }
+      if (advertiserName) {
+        if (!match._advMap[advertiserName]) match._advMap[advertiserName] = { raw_calls:0, paid_calls:0, revenue:0 };
+        match._advMap[advertiserName].raw_calls  += raw_calls;
+        match._advMap[advertiserName].paid_calls += paid_calls;
+        match._advMap[advertiserName].revenue    += revenue;
+      }
+
       if (!updated.includes(match.ivrName)) updated.push(match.ivrName);
     } else {
       if (!newAgents.find(n => n.ivrName === ivrName))
@@ -1192,7 +1251,14 @@ function processUpdate() {
     }
   });
 
-  AGENTS.forEach(a => delete a._updated);
+  // Finalize breakdowns
+  AGENTS.forEach(a => {
+    if (a._pubMap) {
+      a.pubBreakdown = Object.entries(a._pubMap).map(([name,d]) => ({name,...d})).sort((x,y)=>y.raw_calls-x.raw_calls).slice(0,10);
+      a.advBreakdown = Object.entries(a._advMap||{}).map(([name,d]) => ({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10);
+    }
+    delete a._updated; delete a._pubMap; delete a._advMap;
+  });
 
   const results = document.getElementById('update-results');
   let html = '';
@@ -1267,28 +1333,60 @@ async function loadFromSupabase() {
   const startISO = toISO(activeRange.start);
   const endISO   = toISO(activeRange.end);
 
-  AGENTS.forEach(a => { a.raw_calls=0; a.paid_calls=0; a.revenue=0; a.margin=0; a.conversion=0; a.avg_duration=null; });
+  // Reset agent metrics and breakdown data
+  AGENTS.forEach(a => {
+    a.raw_calls=0; a.paid_calls=0; a.revenue=0; a.margin=0; a.conversion=0; a.avg_duration=null;
+    a._pubMap = {}; a._advMap = {};
+  });
 
   try {
     const [rows, latest] = await Promise.all([
       sbFetch(
-        `agent_metrics?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date` +
+        `agent_metrics_v2?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date,publisher_name,advertiser_name` +
         `&call_date=gte.${startISO}&call_date=lte.${endISO}`
       ),
-      sbFetch('agent_metrics?select=call_date&order=call_date.desc&limit=1')
+      sbFetch('agent_metrics_v2?select=call_date&order=call_date.desc&limit=1')
     ]);
 
     if (rows && rows.length) {
       rows.forEach(row => {
         const match = AGENTS.find(a => normalize(a.ivrName) === normalize(row.ivr_name));
-        if (match) {
-          match.raw_calls  += row.raw_calls  || 0;
-          match.paid_calls += row.paid_calls || 0;
-          match.revenue    += row.revenue    || 0;
-          match.margin     += row.margin     || 0;
-          match.conversion  = row.conversion || match.conversion;
-          match.avg_duration = row.avg_duration || match.avg_duration;
-        }
+        if (!match) return;
+
+        // Aggregate agent-level totals
+        match.raw_calls  += row.raw_calls  || 0;
+        match.paid_calls += row.paid_calls || 0;
+        match.revenue    += row.revenue    || 0;
+        match.margin     += row.margin     || 0;
+        match.conversion  = row.conversion || match.conversion;
+        match.avg_duration = row.avg_duration || match.avg_duration;
+
+        // Aggregate publisher breakdown
+        const pub = row.publisher_name || '(unknown)';
+        if (!match._pubMap[pub]) match._pubMap[pub] = { raw_calls:0, paid_calls:0, revenue:0 };
+        match._pubMap[pub].raw_calls  += row.raw_calls  || 0;
+        match._pubMap[pub].paid_calls += row.paid_calls || 0;
+        match._pubMap[pub].revenue    += row.revenue    || 0;
+
+        // Aggregate advertiser breakdown
+        const adv = row.advertiser_name || '(unknown)';
+        if (!match._advMap[adv]) match._advMap[adv] = { raw_calls:0, paid_calls:0, revenue:0 };
+        match._advMap[adv].raw_calls  += row.raw_calls  || 0;
+        match._advMap[adv].paid_calls += row.paid_calls || 0;
+        match._advMap[adv].revenue    += row.revenue    || 0;
+      });
+
+      // Convert maps to sorted arrays and store on agent
+      AGENTS.forEach(a => {
+        a.pubBreakdown = Object.entries(a._pubMap)
+          .map(([name, d]) => ({ name, ...d }))
+          .sort((x,y) => y.raw_calls - x.raw_calls)
+          .slice(0, 10);
+        a.advBreakdown = Object.entries(a._advMap)
+          .map(([name, d]) => ({ name, ...d }))
+          .sort((x,y) => y.revenue - x.revenue)
+          .slice(0, 10);
+        delete a._pubMap; delete a._advMap;
       });
     }
 
@@ -1314,23 +1412,24 @@ async function saveToSupabase(rows) {
   const payload = rows
     .filter(r => r.callDate)
     .map(r => ({
-      ivr_name:     r.ivrName,
-      call_date:    r.callDate,
-      raw_calls:    Math.round(r.raw_calls  || 0),
-      paid_calls:   Math.round(r.paid_calls || 0),
-      conversion:   parseFloat((r.conversion || 0).toFixed(8)),
-      avg_duration: r.avg_dur != null ? parseFloat(r.avg_dur.toFixed(4)) : null,
-      revenue:      parseFloat((r.revenue || 0).toFixed(4)),
-      margin:       parseFloat((r.margin  || 0).toFixed(4))
+      ivr_name:        r.ivrName,
+      call_date:       r.callDate,
+      publisher_name:  r.publisherName  || null,
+      advertiser_name: r.advertiserName || null,
+      raw_calls:       Math.round(r.raw_calls  || 0),
+      paid_calls:      Math.round(r.paid_calls || 0),
+      conversion:      parseFloat((r.conversion || 0).toFixed(8)),
+      avg_duration:    r.avg_dur != null ? parseFloat(r.avg_dur.toFixed(4)) : null,
+      revenue:         parseFloat((r.revenue || 0).toFixed(4)),
+      margin:          parseFloat((r.margin  || 0).toFixed(4))
     }));
 
   if (!payload.length) throw new Error('No valid dates in export — check call_date column.');
 
-  // Chunk into batches of 500 to stay within Supabase request limits
   const CHUNK = 500;
   for (let i = 0; i < payload.length; i += CHUNK) {
     const batch = payload.slice(i, i + CHUNK);
-    await sbFetch('agent_metrics?on_conflict=ivr_name,call_date', {
+    await sbFetch('agent_metrics_v2?on_conflict=ivr_name,call_date,publisher_name,advertiser_name', {
       method: 'POST',
       headers: { 'Prefer': 'resolution=merge-duplicates' },
       body: JSON.stringify(batch)
