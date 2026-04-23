@@ -381,7 +381,37 @@
   <!-- UPDATE PANEL -->
   <div class="update-panel" id="update-panel">
     <h3>Update agent data</h3>
-    <p>Paste in your BigQuery export — tab-separated with columns: <code style="font-family:var(--mono);font-size:11px">ivr_name, call_date, raw_calls, paid_calls, conversion, avg_duration, revenue, margin</code>. Each row is one agent on one day. New dates are added to history — existing dates are overwritten.</p>
+    <p>Run the query below in BigQuery, copy the results, and paste them into the box beneath. <strong>Safe to re-run the same dates</strong> — duplicate rows are automatically overwritten, never double-counted.</p>
+
+    <div style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text);">BigQuery query</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Change the two dates in the <code style="font-family:var(--mono);background:var(--brand-mint-bg);color:var(--brand-navy);padding:1px 4px;border-radius:3px;">BETWEEN</code> clause before running. For a weekly update, set start = 7 days ago, end = yesterday.</div>
+        </div>
+        <button onclick="copySQL(this)" style="font-family:var(--sans);font-size:12px;font-weight:500;color:var(--brand-navy);background:var(--brand-mint-bg);border:1px solid var(--brand-mint);border-radius:var(--radius-sm);padding:5px 14px;cursor:pointer;white-space:nowrap;transition:all 0.12s;">Copy query</button>
+      </div>
+      <pre id="bq-sql" style="font-family:var(--mono);font-size:11.5px;color:var(--text);background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:16px;overflow-x:auto;white-space:pre;line-height:1.7;pointer-events:none;cursor:default;">SELECT
+  ivr_name,
+  DATE(created_at, 'America/Denver') AS call_date,
+  COALESCE(publisher_name, '(direct)') AS publisher_name,
+  COALESCE(advertiser_name, '(direct)') AS advertiser_name,
+  COUNT(*) AS raw_calls,
+  COUNTIF(advertiser_payin > 0) AS paid_calls,
+  SAFE_DIVIDE(COUNTIF(advertiser_payin > 0), COUNT(*)) AS conversion,
+  AVG(IF(advertiser_payin > 0, ivr_duration, NULL)) AS avg_duration,
+  SUM(advertiser_payin) AS revenue,
+  SUM(advertiser_payin - publisher_payout) AS margin
+FROM `ringpartner-exchange.phone_lead_transactions.phone_lead_transactions`
+WHERE LOWER(ivr_name) LIKE 'ascnd%'
+  AND DATE(created_at, 'America/Denver') BETWEEN '2026-04-10' AND '2026-04-16'
+GROUP BY ivr_name, call_date, publisher_name, advertiser_name
+ORDER BY call_date DESC, revenue DESC</pre>
+    </div>
+
+    <div style="font-size:12px;color:var(--text-2);margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-sm);border-left:3px solid var(--brand-mint);">
+      <strong>Paste results here</strong> — tab-separated, header row included. Each row = one agent + one day + one publisher + one advertiser combination.
+    </div>
     <textarea class="update-textarea" id="update-paste" placeholder="Paste BigQuery output here..."></textarea>
     <br>
     <button class="update-btn" onclick="processUpdate()">Process update</button>
@@ -1195,6 +1225,20 @@ function submitRequest() {
   document.getElementById('preview-desc').textContent    = fullDesc;
   document.getElementById('ticket-preview').style.display = 'block';
   document.getElementById('ticket-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copySQL(btn) {
+  const sql = document.getElementById('bq-sql').textContent;
+  navigator.clipboard.writeText(sql.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.background = 'var(--teal-bg)';
+    btn.style.color = 'var(--teal)';
+    setTimeout(() => {
+      btn.textContent = 'Copy query';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 2000);
+  });
 }
 
 function copyField(id, btn) {
