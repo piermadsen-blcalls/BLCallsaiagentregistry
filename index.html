@@ -80,8 +80,7 @@
   .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
   .card-vtag { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
   .card-status { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 100px; }
-  .status-live { background: var(--teal-bg); color: var(--teal); }
-  .status-test { background: var(--amber-bg); color: var(--amber); }
+  .status-active { background: var(--teal-bg); color: var(--teal); }
   .status-inactive { background: var(--gray-bg); color: var(--text-3); }
   .card-name { font-family: var(--serif); font-size: 17px; font-weight: 400; color: var(--text); line-height: 1.3; margin-bottom: 5px; }
   .card-routing { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
@@ -974,7 +973,7 @@ function renderCard(a, idx) {
   return `<div class="agent-card${isOpen?' open':''}" onclick="toggleAgent(${idx})" style="animation-delay:${(idx%12)*0.02}s">
     <div class="card-header">
       <span class="card-vtag ${vClass(a.vertical)}">${a.vertical}</span>
-      <span class="card-status status-${a.status}">${a.status==='live'?'Live':a.status==='test'?'Test':'Inactive'}</span>
+      <span class="card-status ${a.raw_calls>0?'status-active':'status-inactive'}">${a.raw_calls>0?'Active':'Inactive'}</span>
     </div>
     <div class="card-name">${a.name}</div>
     <div class="card-routing">${rtLabel(a.routingType)}</div>
@@ -1006,8 +1005,7 @@ function renderDrawer(a) {
     </tr>`).join('')}</tbody>
   </table><div class="canoe-count">${a.ivrTargets.length} total</div>` : '<div class="canoe-none">No IVR targets after listing search</div>';
 
-  const qualSection = a.status === 'test' ? '<div class="canoe-none">Internal test agent — no qualification logic</div>' :
-    hasQual ? `<div class="qual-list">${a.qualifying.map(q => `<div class="qual-item"><div class="qual-dot"></div>${q}</div>`).join('')}</div>${a.disqualify ? `<div class="qual-disqualify">Disqualifies: ${a.disqualify}</div>` : ''}` :
+  const qualSection = hasQual ? `<div class="qual-list">${a.qualifying.map(q => `<div class="qual-item"><div class="qual-dot"></div>${q}</div>`).join('')}</div>${a.disqualify ? `<div class="qual-disqualify">Disqualifies: ${a.disqualify}</div>` : ''}` :
     '<div class="canoe-none">No qualification data on record</div>';
 
   const cv = a.conversion > 0 ? (a.conversion*100).toFixed(1)+'%' : '—';
@@ -1369,10 +1367,6 @@ function processUpdate() {
       a.advBreakdown = Object.entries(a._advMap||{}).map(([name,d]) => ({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10);
     }
     delete a._updated; delete a._pubMap; delete a._advMap;
-    // Auto-update status based on calls in the selected window (never touch test agents)
-    if (a.status !== 'test') {
-      a.status = a.raw_calls > 0 ? 'live' : 'inactive';
-    }
   });
 
   const results = document.getElementById('update-results');
@@ -1512,13 +1506,6 @@ async function loadFromSupabase() {
         delete a._pubMap; delete a._advMap;
       });
     }
-
-    // Auto-update status based on calls in the selected window (always runs, never touches test agents)
-    AGENTS.forEach(a => {
-      if (a.status !== 'test') {
-        a.status = a.raw_calls > 0 ? 'live' : 'inactive';
-      }
-    });
 
     if (latest && latest.length && latest[0].call_date) {
       const d = new Date(latest[0].call_date + 'T00:00:00');
