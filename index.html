@@ -2070,17 +2070,17 @@ function devResetNewForm() {
 }
 
 // ── Open detail modal ─────────────────────────────────────────────────────────
-async function devOpenDetail(ivrId) {
+async function devOpenDetail(ivrId, alreadyOpen) {
   try {
     const rows = await devSbFetch(`ivr_development?id=eq.${ivrId}&select=*`);
     if (!rows || !rows.length) return;
     devCurrentIvr = rows[0];
 
-    const signoffs  = await devSbFetch(`ivr_signoffs?ivr_id=eq.${ivrId}&select=*`);
+    const signoffs   = await devSbFetch(`ivr_signoffs?ivr_id=eq.${ivrId}&select=*`);
     const recordings = await devSbFetch(`ivr_recordings?ivr_id=eq.${ivrId}&order=uploaded_at.desc&select=*`);
 
     devPopulateDetail(devCurrentIvr, signoffs || [], recordings || []);
-    devOpenModal('dev-modal-detail');
+    if (!alreadyOpen) devOpenModal('dev-modal-detail');
   } catch(e) {
     alert('Could not load IVR: ' + e.message);
   }
@@ -2200,7 +2200,7 @@ async function devAddRecording() {
     });
     document.getElementById('dev-link-label').value = '';
     document.getElementById('dev-link-url').value = '';
-    await devOpenDetail(devCurrentIvr.id);
+    await devOpenDetail(devCurrentIvr.id, true);
   } catch(e) {
     alert('Could not save link: ' + e.message);
   }
