@@ -270,17 +270,17 @@
   .dev-summary-item { background:var(--bg); border-radius:var(--radius-sm); padding:10px 12px; }
   .dev-summary-key { font-size:11px; color:var(--text-3); margin-bottom:3px; }
   .dev-summary-val { font-size:13px; color:var(--text); font-weight:500; }
-  .dev-upload-zone { border:1px dashed var(--border-strong); border-radius:var(--radius-sm); padding:1.25rem; text-align:center; cursor:pointer; background:var(--bg); }
-  .dev-upload-zone:hover { border-color:var(--text-2); }
-  .dev-upload-list { margin-top:10px; display:flex; flex-direction:column; gap:6px; }
-  .dev-upload-item { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); gap:10px; }
-  .dev-upload-item-left { display:flex; align-items:center; gap:10px; min-width:0; }
+  .dev-upload-list { margin-top:0; display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+  .dev-upload-item { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); gap:10px; }
+  .dev-upload-item-left { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
   .dev-upload-icon { flex-shrink:0; width:28px; height:28px; border-radius:4px; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text-3); }
   .dev-upload-info { min-width:0; }
-  .dev-upload-name { font-size:13px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:220px; }
-  .dev-upload-meta { font-size:11px; color:var(--text-3); margin-top:1px; }
-  .dev-btn-dl { background:none; border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:5px 10px; font-size:12px; color:var(--text-2); cursor:pointer; display:flex; align-items:center; gap:5px; flex-shrink:0; font-family:var(--sans); transition:all 0.12s; }
-  .dev-btn-dl:hover { background:var(--bg); color:var(--text); }
+  .dev-upload-name { font-size:13px; color:var(--text); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+  .dev-upload-url { font-size:11px; color:var(--brand-navy); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; text-decoration:none; }
+  .dev-upload-url:hover { text-decoration:underline; }
+  .dev-btn-open { background:none; border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:5px 10px; font-size:12px; color:var(--text-2); cursor:pointer; display:flex; align-items:center; gap:5px; flex-shrink:0; font-family:var(--sans); transition:all 0.12s; text-decoration:none; white-space:nowrap; }
+  .dev-btn-open:hover { background:var(--bg); color:var(--text); }
+  .dev-add-link-row { display:flex; align-items:flex-end; gap:8px; margin-top:4px; flex-wrap:wrap; }
   .dev-signoff-block { background:var(--bg); border-radius:var(--radius-sm); padding:1rem; display:flex; flex-direction:column; gap:10px; border:1px solid var(--border); }
   .dev-signoff-block.approved { border-color:var(--teal); }
   .dev-signoff-block.rejected { border-color:#F09595; }
@@ -602,12 +602,17 @@
     <div class="dev-section-label" style="margin-bottom:8px">Requirements summary</div>
     <div class="dev-summary-grid" id="dev-detail-summary"></div>
     <div class="dev-divider"></div>
-    <div class="dev-section-label" style="margin-bottom:8px">Test recordings</div>
-    <div class="dev-upload-zone" id="dev-detail-upload-zone">
-      <div style="font-size:14px;color:var(--text-2);margin-bottom:3px">Drop recordings here or click to upload</div>
-      <div style="font-size:12px;color:var(--text-3)">.mp3, .wav, .m4a — up to 50 MB each</div>
-    </div>
+    <div class="dev-section-label" style="margin-bottom:8px">Test recordings &amp; transcripts</div>
     <div class="dev-upload-list" id="dev-detail-recordings"></div>
+    <div class="dev-add-link-row" id="dev-add-link-row">
+      <div class="dev-field-group" style="flex:1;min-width:0">
+        <input type="text" class="dev-input" id="dev-link-label" placeholder="Label (e.g. Qualified call test 1)">
+      </div>
+      <div class="dev-field-group" style="flex:2;min-width:0">
+        <input type="text" class="dev-input" id="dev-link-url" placeholder="OneDrive URL">
+      </div>
+      <button class="dev-btn-primary" style="flex-shrink:0;white-space:nowrap" onclick="devAddRecording()">Add link</button>
+    </div>
     <div class="dev-divider"></div>
     <div class="dev-section-label" style="margin-bottom:8px">Team sign-offs</div>
     <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Both teams must approve before this IVR can be marked ready for launch.</div>
@@ -1901,8 +1906,7 @@ let devCurrentIvr = null;   // the full row object for the open detail modal
 let devDeleteTarget = null;
 let devSignoffState = { supply: 'pending', demand: 'pending' };
 
-const devFileIcon = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><rect x="2" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>`;
-const devDlIcon   = `<svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px;flex-shrink:0"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+
 
 // ── Supabase helpers ──────────────────────────────────────────────────────────
 async function devSbFetch(path, opts = {}) {
@@ -2124,21 +2128,23 @@ function devPopulateDetail(row, signoffs, recordings) {
 
   // Recordings
   const recList = document.getElementById('dev-detail-recordings');
+  const linkIcon = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5l-1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
   recList.innerHTML = recordings.length ? recordings.map(r =>
     `<div class="dev-upload-item">
       <div class="dev-upload-item-left">
-        <div class="dev-upload-icon">${devFileIcon}</div>
+        <div class="dev-upload-icon">${linkIcon}</div>
         <div class="dev-upload-info">
           <div class="dev-upload-name">${r.filename}</div>
-          <div class="dev-upload-meta">${r.filesize ? r.filesize + ' · ' : ''}${new Date(r.uploaded_at).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+          <a class="dev-upload-url" href="${r.filesize || '#'}" target="_blank" rel="noopener">${r.filesize || 'No URL'}</a>
         </div>
       </div>
-      <button class="dev-btn-dl" onclick="devFakeDl('${r.filename}')">${devDlIcon}Download</button>
+      <a class="dev-btn-open" href="${r.filesize || '#'}" target="_blank" rel="noopener">Open ↗</a>
     </div>`
   ).join('') : '';
 
-  // Upload zone
-  document.getElementById('dev-detail-upload-zone').onclick = () => devAddRecording(row.id);
+  // Clear add-link inputs and wire up the row
+  document.getElementById('dev-link-label').value = '';
+  document.getElementById('dev-link-url').value = '';
 
   // Sign-offs
   devSignoffState = { supply: 'pending', demand: 'pending' };
@@ -2177,24 +2183,29 @@ function devPopulateDetail(row, signoffs, recordings) {
   devCheckLaunch();
 }
 
-// ── Add recording metadata ────────────────────────────────────────────────────
-async function devAddRecording(ivrId) {
-  const filename = prompt('Enter recording filename (e.g. test_qualified_01.mp3):');
-  if (!filename || !filename.trim()) return;
+// ── Add recording link ────────────────────────────────────────────────────────
+async function devAddRecording() {
+  const label = document.getElementById('dev-link-label').value.trim();
+  const url   = document.getElementById('dev-link-url').value.trim();
+  if (!label) { document.getElementById('dev-link-label').focus(); return; }
+  if (!url)   { document.getElementById('dev-link-url').focus(); return; }
+
+  const btn = document.querySelector('#dev-add-link-row .dev-btn-primary');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
   try {
     await devSbFetch('ivr_recordings', {
       method: 'POST',
-      body: JSON.stringify({ ivr_id: ivrId, filename: filename.trim(), filesize: null })
+      body: JSON.stringify({ ivr_id: devCurrentIvr.id, filename: label, filesize: url })
     });
-    await devOpenDetail(ivrId);
+    document.getElementById('dev-link-label').value = '';
+    document.getElementById('dev-link-url').value = '';
+    await devOpenDetail(devCurrentIvr.id);
   } catch(e) {
-    alert('Could not save recording: ' + e.message);
+    alert('Could not save link: ' + e.message);
   }
-}
 
-function devFakeDl(filename) {
-  const a = document.createElement('a');
-  a.href = '#'; a.download = filename; a.click();
+  btn.disabled = false; btn.textContent = 'Add link';
 }
 
 // ── Sign-offs ─────────────────────────────────────────────────────────────────
