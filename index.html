@@ -235,8 +235,7 @@
   .dev-badge-approved { background:var(--teal-bg); color:var(--teal); }
   .dev-badge-live { background:var(--blue-bg); color:var(--blue); }
   .dev-modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:300; align-items:center; justify-content:center; }
-  .dev-modal-backdrop.open { display:flex; }
-  .dev-modal { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border-strong); padding:1.5rem; width:min(620px,94vw); max-height:88vh; overflow-y:auto; }
+  .dev-modal-backdrop.open { display:flex; }  .dev-modal { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border-strong); padding:1.5rem; width:min(620px,94vw); max-height:88vh; overflow-y:auto; }
   .dev-modal-sm { width:min(400px,92vw); max-height:unset; }
   .dev-modal-title { font-family:var(--serif); font-size:22px; font-weight:400; margin-bottom:1.25rem; color:var(--text); }
   .dev-modal-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border); }
@@ -482,215 +481,12 @@
         <div class="dev-page-title">In development</div>
         <div class="dev-page-sub">AI IVR builds in progress</div>
       </div>
-      <button class="dev-btn-primary" onclick="devOpenModal('modal-new')">
+      <button class="dev-btn-primary" onclick="devOpenModal('dev-modal-new')">
         <span style="font-size:18px;line-height:1">+</span> Build new AI IVR
       </button>
     </div>
-
     <div class="dev-ivr-list" id="dev-ivr-list">
-      <div class="dev-ivr-card" id="ivr-1">
-        <div class="dev-card-menu-col">
-          <button class="dev-dots-btn" onclick="devToggleMenu('dev-menu-1',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button>
-          <div class="dev-dropdown" id="dev-menu-1"><button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('ivr-1','Home warranty — inbound qualifier')">Delete</button></div>
-        </div>
-        <div class="dev-card-body" onclick="devOpenModal('modal-detail')">
-          <div class="dev-card-name">Home warranty — inbound qualifier</div>
-          <div class="dev-card-meta">Legal · Advertiser-led · Started Apr 28</div>
-        </div>
-        <div class="dev-card-right"><span class="dev-badge dev-badge-review">In review</span><span class="dev-card-chevron">›</span></div>
-      </div>
-      <div class="dev-ivr-card" id="ivr-2">
-        <div class="dev-card-menu-col">
-          <button class="dev-dots-btn" onclick="devToggleMenu('dev-menu-2',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button>
-          <div class="dev-dropdown" id="dev-menu-2"><button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('ivr-2','Auto insurance — publisher screen')">Delete</button></div>
-        </div>
-        <div class="dev-card-body" onclick="devOpenModal('modal-detail2')">
-          <div class="dev-card-name">Auto insurance — publisher screen</div>
-          <div class="dev-card-meta">Insurance · Publisher-led · Started May 1</div>
-        </div>
-        <div class="dev-card-right"><span class="dev-badge dev-badge-draft">Draft</span><span class="dev-card-chevron">›</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEV: DELETE CONFIRM -->
-  <div class="dev-modal-backdrop" id="modal-confirm">
-    <div class="dev-modal dev-modal-sm">
-      <div class="dev-modal-title" style="margin-bottom:8px">Delete this IVR?</div>
-      <div style="font-size:14px;color:var(--text-2);line-height:1.6">This will permanently remove <strong id="dev-confirm-name"></strong> and all associated recordings and sign-offs. This can't be undone.</div>
-      <div class="dev-modal-footer">
-        <button class="dev-btn-cancel" onclick="devCloseModal('modal-confirm')">Cancel</button>
-        <button class="dev-btn-primary" style="background:#A32D2D;border-color:#A32D2D" onclick="devDoDelete()">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEV: NEW IVR MODAL -->
-  <div class="dev-modal-backdrop" id="modal-new">
-    <div class="dev-modal">
-      <div class="dev-modal-title">New AI IVR</div>
-      <div class="dev-section-label">Identity</div>
-      <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">IVR name / working title</label><input type="text" class="dev-input" placeholder="e.g. Home warranty inbound qualifier"></div></div>
-      <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Vertical</label><input type="text" class="dev-input" placeholder="e.g. Legal, Home services, Insurance"></div></div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label">Purpose</div>
-      <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">What is this IVR qualifying for?</label><textarea class="dev-textarea" placeholder="Describe the buyer intent, campaign objective, or case type being screened for…"></textarea></div></div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label">Ownership model</div>
-      <div class="dev-field-row dev-full">
-        <div class="dev-field-group">
-          <label class="dev-label">Advertiser-led or publisher-led?</label>
-          <div class="dev-radio-group">
-            <label class="dev-radio-opt"><input type="radio" name="dev-led" value="advertiser" onchange="devShowLed('advertiser')"> Advertiser-led</label>
-            <label class="dev-radio-opt"><input type="radio" name="dev-led" value="publisher" onchange="devShowLed('publisher')"> Publisher-led</label>
-            <label class="dev-radio-opt"><input type="radio" name="dev-led" value="both" onchange="devShowLed('both')"> Both</label>
-          </div>
-        </div>
-      </div>
-      <div class="dev-cond-section" id="dev-cond-adv"><div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Which advertisers will use this?</label><input type="text" class="dev-input" placeholder="Names or IDs, comma-separated"></div></div></div>
-      <div class="dev-cond-section" id="dev-cond-pub"><div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Which publishers will use this?</label><input type="text" class="dev-input" placeholder="Names or IDs, comma-separated"></div></div></div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label">Call logic</div>
-      <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Hard disqualification conditions</label><textarea class="dev-textarea" placeholder="e.g. Wrong state, already has coverage, under 18, no recent incident…"></textarea></div></div>
-      <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Data to collect and pass on qualified calls</label><textarea class="dev-textarea" placeholder="e.g. Name, zip, product type, prior claim history, incident date…"></textarea></div></div>
-      <div class="dev-field-row">
-        <div class="dev-field-group"><label class="dev-label">Expected avg call duration</label><input type="text" class="dev-input" placeholder="e.g. 90–150 seconds"></div>
-        <div class="dev-field-group">
-          <label class="dev-label">On disqualification</label>
-          <select class="dev-select" id="dev-dq-action" onchange="devToggleRepingFields()">
-            <option value="">Select action</option>
-            <option value="hangup">Polite hang up</option>
-            <option value="reping">Re-ping</option>
-          </select>
-        </div>
-      </div>
-      <div class="dev-reping-fields" id="dev-reping-fields">
-        <div class="dev-field-row dev-full" style="margin-bottom:0"><div class="dev-field-group"><label class="dev-label">How will repinging work for this AI IVR?</label><textarea class="dev-textarea" placeholder="e.g. After DQ, repings to what vertical(s)?"></textarea></div></div>
-      </div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label">Notes</div>
-      <div class="dev-field-row dev-full" style="margin-bottom:0"><div class="dev-field-group"><label class="dev-label">Additional context or edge cases</label><textarea class="dev-textarea" placeholder="Anything else the team needs to know to build or test this IVR…"></textarea></div></div>
-      <div class="dev-modal-footer">
-        <button class="dev-btn-cancel" onclick="devCloseModal('modal-new')">Cancel</button>
-        <button class="dev-btn-primary" onclick="devSubmitNew()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEV: DETAIL MODAL 1 — in review -->
-  <div class="dev-modal-backdrop" id="modal-detail">
-    <div class="dev-modal">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px">
-        <div class="dev-modal-title" style="margin-bottom:0">Home warranty — inbound qualifier</div>
-        <span class="dev-badge dev-badge-review" style="flex-shrink:0;margin-top:4px">In review</span>
-      </div>
-      <div style="font-size:13px;color:var(--text-2);margin-bottom:1.25rem">Legal · Advertiser-led · Started Apr 28</div>
-      <div class="dev-status-rail">
-        <div class="dev-status-step dev-done"><div class="dev-status-dot"></div>Draft</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step dev-active"><div class="dev-status-dot"></div>In review</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step"><div class="dev-status-dot"></div>Approved</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step"><div class="dev-status-dot"></div>Live</div>
-      </div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label" style="margin-bottom:8px">Requirements summary</div>
-      <div class="dev-summary-grid">
-        <div class="dev-summary-item"><div class="dev-summary-key">Qualifying for</div><div class="dev-summary-val">Home warranty claim — active homeowner</div></div>
-        <div class="dev-summary-item"><div class="dev-summary-key">Expected call duration</div><div class="dev-summary-val">90–120 seconds</div></div>
-        <div class="dev-summary-item"><div class="dev-summary-key">Hard disqualification conditions</div><div class="dev-summary-val">Renter, outside US, no recent claim, under 18</div></div>
-        <div class="dev-summary-item"><div class="dev-summary-key">Data passed on qualified call</div><div class="dev-summary-val">Name, zip, claim type, policy status, homeowner confirm</div></div>
-      </div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label" style="margin-bottom:8px">Test recordings</div>
-      <div class="dev-upload-zone" onclick="devFakeUpload('ul-detail')">
-        <div style="font-size:14px;color:var(--text-2);margin-bottom:3px">Drop recordings here or click to upload</div>
-        <div style="font-size:12px;color:var(--text-3)">.mp3, .wav, .m4a — up to 50 MB each</div>
-      </div>
-      <div class="dev-upload-list" id="ul-detail">
-        <div class="dev-upload-item">
-          <div class="dev-upload-item-left"><div class="dev-upload-icon"><svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><rect x="2" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></div><div class="dev-upload-info"><div class="dev-upload-name">test_qualified_01.mp3</div><div class="dev-upload-meta">2.1 MB · May 2</div></div></div>
-          <button class="dev-btn-dl" onclick="devFakeDl('test_qualified_01.mp3')"><svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px;flex-shrink:0"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Download</button>
-        </div>
-        <div class="dev-upload-item">
-          <div class="dev-upload-item-left"><div class="dev-upload-icon"><svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><rect x="2" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg></div><div class="dev-upload-info"><div class="dev-upload-name">test_dq_wrong_state.mp3</div><div class="dev-upload-meta">1.4 MB · May 3</div></div></div>
-          <button class="dev-btn-dl" onclick="devFakeDl('test_dq_wrong_state.mp3')"><svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px;flex-shrink:0"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Download</button>
-        </div>
-      </div>
-      <div class="dev-divider"></div>
-      <div class="dev-section-label" style="margin-bottom:8px">Team sign-offs</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Both teams must approve before this IVR can be marked ready for launch.</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div class="dev-signoff-block" id="dev-sb-supply">
-          <div class="dev-signoff-header">
-            <div><div class="dev-signoff-team">Supply team</div><div class="dev-signoff-desc">Publisher experience, call flow, transfer logic</div></div>
-            <span class="dev-sig-badge dev-sig-pending" id="dev-badge-supply">Pending</span>
-          </div>
-          <div>
-            <textarea id="dev-note-supply" class="dev-signoff-textarea" placeholder="Notes on call quality, publisher-side concerns, or required changes…"></textarea>
-            <div class="dev-note-hint" id="dev-hint-supply">A note is required before submitting.</div>
-          </div>
-          <div class="dev-signoff-actions">
-            <button class="dev-btn-approve" id="dev-btn-app-supply" onclick="devSignoff('supply','approve')">Approve</button>
-            <button class="dev-btn-reject" id="dev-btn-rej-supply" onclick="devSignoff('supply','reject')">Request changes</button>
-          </div>
-        </div>
-        <div class="dev-signoff-block" id="dev-sb-demand">
-          <div class="dev-signoff-header">
-            <div><div class="dev-signoff-team">Demand team</div><div class="dev-signoff-desc">Advertiser qualifications, data fields, payout logic</div></div>
-            <span class="dev-sig-badge dev-sig-pending" id="dev-badge-demand">Pending</span>
-          </div>
-          <div>
-            <textarea id="dev-note-demand" class="dev-signoff-textarea" placeholder="Notes on qualification accuracy, data pass-through, or advertiser-specific edge cases…"></textarea>
-            <div class="dev-note-hint" id="dev-hint-demand">A note is required before submitting.</div>
-          </div>
-          <div class="dev-signoff-actions">
-            <button class="dev-btn-approve" id="dev-btn-app-demand" onclick="devSignoff('demand','approve')">Approve</button>
-            <button class="dev-btn-reject" id="dev-btn-rej-demand" onclick="devSignoff('demand','reject')">Request changes</button>
-          </div>
-        </div>
-      </div>
-      <div class="dev-launch-gate" id="dev-launch-gate">
-        <span id="dev-gate-icon">⏳</span>
-        <span id="dev-gate-text">Waiting for both sign-offs before launch is available.</span>
-      </div>
-      <div class="dev-modal-footer">
-        <button class="dev-btn-cancel" onclick="devCloseModal('modal-detail')">Close</button>
-        <button class="dev-btn-primary" id="dev-btn-launch" disabled>Mark ready for launch ↗</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEV: DETAIL MODAL 2 — draft -->
-  <div class="dev-modal-backdrop" id="modal-detail2">
-    <div class="dev-modal">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px">
-        <div class="dev-modal-title" style="margin-bottom:0">Auto insurance — publisher screen</div>
-        <span class="dev-badge dev-badge-draft" style="flex-shrink:0;margin-top:4px">Draft</span>
-      </div>
-      <div style="font-size:13px;color:var(--text-2);margin-bottom:1.25rem">Insurance · Publisher-led · Started May 1</div>
-      <div class="dev-status-rail">
-        <div class="dev-status-step dev-active"><div class="dev-status-dot"></div>Draft</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step"><div class="dev-status-dot"></div>In review</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step"><div class="dev-status-dot"></div>Approved</div>
-        <div class="dev-status-line"></div>
-        <div class="dev-status-step"><div class="dev-status-dot"></div>Live</div>
-      </div>
-      <div class="dev-divider"></div>
-      <div style="font-size:14px;color:var(--text-2);margin-bottom:1rem">Requirements still being gathered. Upload test recordings and submit for review once the IVR is ready.</div>
-      <div class="dev-section-label" style="margin-bottom:8px">Test recordings</div>
-      <div class="dev-upload-zone" onclick="devFakeUpload('ul-detail2')">
-        <div style="font-size:14px;color:var(--text-2);margin-bottom:3px">Drop recordings here or click to upload</div>
-        <div style="font-size:12px;color:var(--text-3)">.mp3, .wav, .m4a — up to 50 MB each</div>
-      </div>
-      <div class="dev-upload-list" id="ul-detail2"></div>
-      <div class="dev-modal-footer">
-        <button class="dev-btn-cancel" onclick="devCloseModal('modal-detail2')">Close</button>
-        <button class="dev-btn-primary">Submit for review ↗</button>
-      </div>
+      <div style="text-align:center;padding:40px 20px;color:var(--text-3);font-size:14px;" id="dev-empty-state">Loading...</div>
     </div>
   </div>
 
@@ -725,6 +521,135 @@
     <div id="new-agent-intakes"></div>
   </div>
 
+</div>
+
+<!-- DEV MODALS — outside .shell so position:fixed works correctly -->
+
+<!-- DEV: DELETE CONFIRM -->
+<div class="dev-modal-backdrop" id="dev-modal-confirm">
+  <div class="dev-modal dev-modal-sm">
+    <div class="dev-modal-title" style="margin-bottom:8px">Delete this IVR?</div>
+    <div style="font-size:14px;color:var(--text-2);line-height:1.6">This will permanently remove <strong id="dev-confirm-name"></strong> and all associated recordings and sign-offs. This can't be undone.</div>
+    <div class="dev-modal-footer">
+      <button class="dev-btn-cancel" onclick="devCloseModal('dev-modal-confirm')">Cancel</button>
+      <button class="dev-btn-primary" style="background:#A32D2D" onclick="devDoDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEV: NEW IVR MODAL -->
+<div class="dev-modal-backdrop" id="dev-modal-new">
+  <div class="dev-modal">
+    <div class="dev-modal-title">New AI IVR</div>
+    <div class="dev-section-label">Identity</div>
+    <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">IVR name / working title</label><input type="text" class="dev-input" id="dev-f-name" placeholder="e.g. Home warranty inbound qualifier"></div></div>
+    <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Vertical</label><input type="text" class="dev-input" id="dev-f-vertical" placeholder="e.g. Legal, Home services, Insurance"></div></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label">Purpose</div>
+    <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">What is this IVR qualifying for?</label><textarea class="dev-textarea" id="dev-f-qualifying" placeholder="Describe the buyer intent, campaign objective, or case type being screened for…"></textarea></div></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label">Ownership model</div>
+    <div class="dev-field-row dev-full">
+      <div class="dev-field-group">
+        <label class="dev-label">Advertiser-led or publisher-led?</label>
+        <div class="dev-radio-group">
+          <label class="dev-radio-opt"><input type="radio" name="dev-led" value="advertiser" onchange="devShowLed('advertiser')"> Advertiser-led</label>
+          <label class="dev-radio-opt"><input type="radio" name="dev-led" value="publisher" onchange="devShowLed('publisher')"> Publisher-led</label>
+          <label class="dev-radio-opt"><input type="radio" name="dev-led" value="both" onchange="devShowLed('both')"> Both</label>
+        </div>
+      </div>
+    </div>
+    <div class="dev-cond-section" id="dev-cond-adv"><div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Which advertisers will use this?</label><input type="text" class="dev-input" id="dev-f-advertisers" placeholder="Names or IDs, comma-separated"></div></div></div>
+    <div class="dev-cond-section" id="dev-cond-pub"><div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Which publishers will use this?</label><input type="text" class="dev-input" id="dev-f-publishers" placeholder="Names or IDs, comma-separated"></div></div></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label">Call logic</div>
+    <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Hard disqualification conditions</label><textarea class="dev-textarea" id="dev-f-harddq" placeholder="e.g. Wrong state, already has coverage, under 18, no recent incident…"></textarea></div></div>
+    <div class="dev-field-row dev-full"><div class="dev-field-group"><label class="dev-label">Data to collect and pass on qualified calls</label><textarea class="dev-textarea" id="dev-f-datacollected" placeholder="e.g. Name, zip, product type, prior claim history, incident date…"></textarea></div></div>
+    <div class="dev-field-row">
+      <div class="dev-field-group"><label class="dev-label">Expected avg call duration</label><input type="text" class="dev-input" id="dev-f-duration" placeholder="e.g. 90–150 seconds"></div>
+      <div class="dev-field-group">
+        <label class="dev-label">On disqualification</label>
+        <select class="dev-select" id="dev-f-ondq" onchange="devToggleRepingFields()">
+          <option value="">Select action</option>
+          <option value="hangup">Polite hang up</option>
+          <option value="reping">Re-ping</option>
+        </select>
+      </div>
+    </div>
+    <div class="dev-reping-fields" id="dev-reping-fields">
+      <div class="dev-field-row dev-full" style="margin-bottom:0"><div class="dev-field-group"><label class="dev-label">How will repinging work for this AI IVR?</label><textarea class="dev-textarea" id="dev-f-repinglogic" placeholder="e.g. After DQ, repings to what vertical(s)?"></textarea></div></div>
+    </div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label">Notes</div>
+    <div class="dev-field-row dev-full" style="margin-bottom:0"><div class="dev-field-group"><label class="dev-label">Additional context or edge cases</label><textarea class="dev-textarea" id="dev-f-notes" placeholder="Anything else the team needs to know to build or test this IVR…"></textarea></div></div>
+    <div class="dev-modal-footer">
+      <button class="dev-btn-cancel" onclick="devCloseModal('dev-modal-new')">Cancel</button>
+      <button class="dev-btn-primary" id="dev-save-btn" onclick="devSubmitNew()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEV: DETAIL MODAL (dynamic — populated by JS) -->
+<div class="dev-modal-backdrop" id="dev-modal-detail">
+  <div class="dev-modal">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px">
+      <div class="dev-modal-title" style="margin-bottom:0" id="dev-detail-title"></div>
+      <span class="dev-badge" id="dev-detail-badge" style="flex-shrink:0;margin-top:4px"></span>
+    </div>
+    <div style="font-size:13px;color:var(--text-2);margin-bottom:1.25rem" id="dev-detail-meta"></div>
+    <div class="dev-status-rail" id="dev-detail-rail"></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label" style="margin-bottom:8px">Requirements summary</div>
+    <div class="dev-summary-grid" id="dev-detail-summary"></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label" style="margin-bottom:8px">Test recordings</div>
+    <div class="dev-upload-zone" id="dev-detail-upload-zone">
+      <div style="font-size:14px;color:var(--text-2);margin-bottom:3px">Drop recordings here or click to upload</div>
+      <div style="font-size:12px;color:var(--text-3)">.mp3, .wav, .m4a — up to 50 MB each</div>
+    </div>
+    <div class="dev-upload-list" id="dev-detail-recordings"></div>
+    <div class="dev-divider"></div>
+    <div class="dev-section-label" style="margin-bottom:8px">Team sign-offs</div>
+    <div style="font-size:12px;color:var(--text-3);margin-bottom:12px">Both teams must approve before this IVR can be marked ready for launch.</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="dev-signoff-block" id="dev-sb-supply">
+        <div class="dev-signoff-header">
+          <div><div class="dev-signoff-team">Supply team</div><div class="dev-signoff-desc">Publisher experience, call flow, transfer logic</div></div>
+          <span class="dev-sig-badge dev-sig-pending" id="dev-badge-supply">Pending</span>
+        </div>
+        <div>
+          <textarea id="dev-note-supply" class="dev-signoff-textarea" placeholder="Notes on call quality, publisher-side concerns, or required changes…"></textarea>
+          <div class="dev-note-hint" id="dev-hint-supply">A note is required before submitting.</div>
+        </div>
+        <div class="dev-signoff-actions">
+          <button class="dev-btn-approve" id="dev-btn-app-supply" onclick="devSignoff('supply','approve')">Approve</button>
+          <button class="dev-btn-reject" id="dev-btn-rej-supply" onclick="devSignoff('supply','reject')">Request changes</button>
+        </div>
+      </div>
+      <div class="dev-signoff-block" id="dev-sb-demand">
+        <div class="dev-signoff-header">
+          <div><div class="dev-signoff-team">Demand team</div><div class="dev-signoff-desc">Advertiser qualifications, data fields, payout logic</div></div>
+          <span class="dev-sig-badge dev-sig-pending" id="dev-badge-demand">Pending</span>
+        </div>
+        <div>
+          <textarea id="dev-note-demand" class="dev-signoff-textarea" placeholder="Notes on qualification accuracy, data pass-through, or advertiser-specific edge cases…"></textarea>
+          <div class="dev-note-hint" id="dev-hint-demand">A note is required before submitting.</div>
+        </div>
+        <div class="dev-signoff-actions">
+          <button class="dev-btn-approve" id="dev-btn-app-demand" onclick="devSignoff('demand','approve')">Approve</button>
+          <button class="dev-btn-reject" id="dev-btn-rej-demand" onclick="devSignoff('demand','reject')">Request changes</button>
+        </div>
+      </div>
+    </div>
+    <div class="dev-launch-gate" id="dev-launch-gate">
+      <span id="dev-gate-icon">⏳</span>
+      <span id="dev-gate-text">Waiting for both sign-offs before launch is available.</span>
+    </div>
+    <div class="dev-modal-footer">
+      <button class="dev-btn-cancel" onclick="devCloseModal('dev-modal-detail')">Close</button>
+      <button class="dev-btn-primary" id="dev-btn-launch" disabled onclick="devMarkLive()">Mark ready for launch ↗</button>
+    </div>
+  </div>
 </div>
 
 <!-- CHATBOT -->
@@ -1972,12 +1897,53 @@ async function sendChat() {
 }
 
 // ─── IN DEVELOPMENT ──────────────────────────────────────────────────────────
-const devState = { supply: 'pending', demand: 'pending' };
+let devCurrentIvr = null;   // the full row object for the open detail modal
 let devDeleteTarget = null;
+let devSignoffState = { supply: 'pending', demand: 'pending' };
 
-function devOpenModal(id) { document.getElementById(id).classList.add('open'); }
-function devCloseModal(id) { document.getElementById(id).classList.remove('open'); }
+const devFileIcon = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><rect x="2" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>`;
+const devDlIcon   = `<svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px;flex-shrink:0"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
 
+// ── Supabase helpers ──────────────────────────────────────────────────────────
+async function devSbFetch(path, opts = {}) {
+  const res = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${path}`, {
+    ...opts,
+    headers: {
+      'apikey': CONFIG.supabaseKey,
+      'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation',
+      ...(opts.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Supabase error: ${err}`);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+// ── Modal open / close ────────────────────────────────────────────────────────
+function devOpenModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+function devCloseModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+// Close on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.dev-modal-backdrop').forEach(b => {
+    b.addEventListener('click', e => { if (e.target === b) b.style.display = 'none'; });
+  });
+  document.querySelectorAll('.dev-signoff-textarea').forEach(t => {
+    t.addEventListener('input', () => t.classList.remove('dev-note-required'));
+  });
+  devLoadIvrs();
+});
+
+// ── Dot menu ─────────────────────────────────────────────────────────────────
 function devToggleMenu(id, e) {
   e.stopPropagation();
   const menu = document.getElementById(id);
@@ -1989,51 +1955,241 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
 });
 
-function devConfirmDelete(cardId, name) {
-  devDeleteTarget = cardId;
-  document.getElementById('dev-confirm-name').textContent = name;
-  document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
-  devOpenModal('modal-confirm');
-}
-function devDoDelete() {
-  if (devDeleteTarget) {
-    const el = document.getElementById(devDeleteTarget);
-    if (el) el.remove();
-    devDeleteTarget = null;
-  }
-  devCloseModal('modal-confirm');
-}
-
+// ── Form helpers ──────────────────────────────────────────────────────────────
 function devShowLed(v) {
   document.getElementById('dev-cond-adv').className = 'dev-cond-section' + (v === 'advertiser' || v === 'both' ? ' visible' : '');
   document.getElementById('dev-cond-pub').className = 'dev-cond-section' + (v === 'publisher' || v === 'both' ? ' visible' : '');
 }
 function devToggleRepingFields() {
-  const val = document.getElementById('dev-dq-action').value;
+  const val = document.getElementById('dev-f-ondq').value;
   document.getElementById('dev-reping-fields').className = 'dev-reping-fields' + (val === 'reping' ? ' visible' : '');
 }
-
-function devSubmitNew() {
-  devCloseModal('modal-new');
-  const list = document.getElementById('dev-ivr-list');
-  const id = 'ivr-' + Date.now();
-  const c = document.createElement('div');
-  c.className = 'dev-ivr-card'; c.id = id;
-  c.innerHTML = `<div class="dev-card-menu-col"><button class="dev-dots-btn" onclick="devToggleMenu('dev-menu-${id}',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button><div class="dev-dropdown" id="dev-menu-${id}"><button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('${id}','New AI IVR — draft')">Delete</button></div></div><div class="dev-card-body"><div class="dev-card-name">New AI IVR — draft</div><div class="dev-card-meta">Just created</div></div><div class="dev-card-right"><span class="dev-badge dev-badge-draft">Draft</span><span class="dev-card-chevron">›</span></div>`;
-  list.appendChild(c);
+function devGetLed() {
+  const sel = document.querySelector('input[name="dev-led"]:checked');
+  return sel ? sel.value : '';
 }
 
-const devFileIcon = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><rect x="2" y="1" width="9" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5h5M5 7.5h5M5 10h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>`;
-const devDlIcon = `<svg viewBox="0 0 14 14" fill="none" style="width:12px;height:12px;flex-shrink:0"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 11h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+// ── Load & render IVR list ────────────────────────────────────────────────────
+async function devLoadIvrs() {
+  const empty = document.getElementById('dev-empty-state');
+  try {
+    const rows = await devSbFetch('ivr_development?order=created_at.desc&select=*');
+    const list = document.getElementById('dev-ivr-list');
+    list.innerHTML = '';
+    if (!rows || rows.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-3);font-size:14px;">No IVRs in development yet. Click "+ Build new AI IVR" to get started.</div>';
+      return;
+    }
+    rows.forEach(row => list.appendChild(devBuildCard(row)));
+  } catch(e) {
+    document.getElementById('dev-ivr-list').innerHTML = `<div style="padding:20px;color:#A32D2D;font-size:13px;">Could not load IVRs: ${e.message}</div>`;
+  }
+}
 
-function devFakeUpload(listId) {
-  const list = document.getElementById(listId);
-  const names = ['test_qualified_new.mp3', 'test_dq_scenario.mp3', 'test_transfer.mp3'];
-  const name = names[list.children.length % names.length];
-  const item = document.createElement('div');
-  item.className = 'dev-upload-item';
-  item.innerHTML = `<div class="dev-upload-item-left"><div class="dev-upload-icon">${devFileIcon}</div><div class="dev-upload-info"><div class="dev-upload-name">${name}</div><div class="dev-upload-meta">uploaded just now</div></div></div><button class="dev-btn-dl" onclick="devFakeDl('${name}')">${devDlIcon}Download</button>`;
-  list.appendChild(item);
+function devBuildCard(row) {
+  const c = document.createElement('div');
+  c.className = 'dev-ivr-card';
+  c.id = 'dev-card-' + row.id;
+  const badgeClass = { draft:'dev-badge-draft', review:'dev-badge-review', approved:'dev-badge-approved', live:'dev-badge-live' }[row.status] || 'dev-badge-draft';
+  const badgeLabel = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' }[row.status] || 'Draft';
+  const date = row.created_at ? new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+  const meta = [row.vertical, row.led_by ? (row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led') : '', date ? 'Started '+date : ''].filter(Boolean).join(' · ');
+  const menuId = 'dev-menu-' + row.id;
+  c.innerHTML = `
+    <div class="dev-card-menu-col">
+      <button class="dev-dots-btn" onclick="devToggleMenu('${menuId}',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button>
+      <div class="dev-dropdown" id="${menuId}">
+        <button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('${row.id}','${row.name.replace(/'/g,"\\'")}')">Delete</button>
+      </div>
+    </div>
+    <div class="dev-card-body" onclick="devOpenDetail('${row.id}')">
+      <div class="dev-card-name">${row.name}</div>
+      <div class="dev-card-meta">${meta}</div>
+    </div>
+    <div class="dev-card-right">
+      <span class="dev-badge ${badgeClass}">${badgeLabel}</span>
+      <span class="dev-card-chevron">›</span>
+    </div>`;
+  return c;
+}
+
+// ── Save new IVR ──────────────────────────────────────────────────────────────
+async function devSubmitNew() {
+  const name = document.getElementById('dev-f-name').value.trim();
+  if (!name) { document.getElementById('dev-f-name').focus(); return; }
+
+  const btn = document.getElementById('dev-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const payload = {
+    name,
+    vertical:          document.getElementById('dev-f-vertical').value.trim() || null,
+    qualifying_for:    document.getElementById('dev-f-qualifying').value.trim() || null,
+    led_by:            devGetLed() || null,
+    advertisers:       document.getElementById('dev-f-advertisers')?.value.trim() || null,
+    publishers:        document.getElementById('dev-f-publishers')?.value.trim() || null,
+    hard_dq:           document.getElementById('dev-f-harddq').value.trim() || null,
+    data_collected:    document.getElementById('dev-f-datacollected').value.trim() || null,
+    expected_duration: document.getElementById('dev-f-duration').value.trim() || null,
+    on_dq:             document.getElementById('dev-f-ondq').value || null,
+    reping_logic:      document.getElementById('dev-f-repinglogic')?.value.trim() || null,
+    notes:             document.getElementById('dev-f-notes').value.trim() || null,
+    status:            'draft'
+  };
+
+  try {
+    const rows = await devSbFetch('ivr_development', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    devCloseModal('dev-modal-new');
+    devResetNewForm();
+    await devLoadIvrs();
+  } catch(e) {
+    alert('Could not save: ' + e.message);
+  }
+
+  btn.disabled = false; btn.textContent = 'Save';
+}
+
+function devResetNewForm() {
+  ['dev-f-name','dev-f-vertical','dev-f-qualifying','dev-f-advertisers','dev-f-publishers',
+   'dev-f-harddq','dev-f-datacollected','dev-f-duration','dev-f-notes','dev-f-repinglogic'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('dev-f-ondq').value = '';
+  document.querySelectorAll('input[name="dev-led"]').forEach(r => r.checked = false);
+  document.getElementById('dev-cond-adv').className = 'dev-cond-section';
+  document.getElementById('dev-cond-pub').className = 'dev-cond-section';
+  document.getElementById('dev-reping-fields').className = 'dev-reping-fields';
+}
+
+// ── Open detail modal ─────────────────────────────────────────────────────────
+async function devOpenDetail(ivrId) {
+  try {
+    const rows = await devSbFetch(`ivr_development?id=eq.${ivrId}&select=*`);
+    if (!rows || !rows.length) return;
+    devCurrentIvr = rows[0];
+
+    const signoffs  = await devSbFetch(`ivr_signoffs?ivr_id=eq.${ivrId}&select=*`);
+    const recordings = await devSbFetch(`ivr_recordings?ivr_id=eq.${ivrId}&order=uploaded_at.desc&select=*`);
+
+    devPopulateDetail(devCurrentIvr, signoffs || [], recordings || []);
+    devOpenModal('dev-modal-detail');
+  } catch(e) {
+    alert('Could not load IVR: ' + e.message);
+  }
+}
+
+function devPopulateDetail(row, signoffs, recordings) {
+  const statusLabels = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' };
+  const badgeClasses = { draft:'dev-badge-draft', review:'dev-badge-review', approved:'dev-badge-approved', live:'dev-badge-live' };
+
+  document.getElementById('dev-detail-title').textContent = row.name;
+  const badge = document.getElementById('dev-detail-badge');
+  badge.textContent = statusLabels[row.status] || 'Draft';
+  badge.className = 'dev-badge ' + (badgeClasses[row.status] || 'dev-badge-draft');
+
+  const date = row.created_at ? new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+  const meta = [row.vertical, row.led_by ? (row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led') : '', date ? 'Started '+date : ''].filter(Boolean).join(' · ');
+  document.getElementById('dev-detail-meta').textContent = meta;
+
+  // Status rail
+  const steps = ['draft','review','approved','live'];
+  const labels = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' };
+  const cur = steps.indexOf(row.status);
+  const rail = document.getElementById('dev-detail-rail');
+  rail.innerHTML = steps.map((s, i) => {
+    const cls = i < cur ? 'dev-status-step dev-done' : i === cur ? 'dev-status-step dev-active' : 'dev-status-step';
+    return (i > 0 ? '<div class="dev-status-line"></div>' : '') +
+      `<div class="${cls}"><div class="dev-status-dot"></div>${labels[s]}</div>`;
+  }).join('');
+
+  // Summary grid
+  const summaryFields = [
+    { key: 'Qualifying for',              val: row.qualifying_for },
+    { key: 'Expected call duration',      val: row.expected_duration },
+    { key: 'Hard disqualification',       val: row.hard_dq },
+    { key: 'Data passed on qualified call', val: row.data_collected },
+    { key: 'On disqualification',         val: row.on_dq },
+    { key: 'Repinging',                   val: row.reping_logic },
+    { key: 'Advertisers',                 val: row.advertisers },
+    { key: 'Publishers',                  val: row.publishers },
+    { key: 'Notes',                       val: row.notes }
+  ].filter(f => f.val);
+  document.getElementById('dev-detail-summary').innerHTML = summaryFields.map(f =>
+    `<div class="dev-summary-item"><div class="dev-summary-key">${f.key}</div><div class="dev-summary-val">${f.val}</div></div>`
+  ).join('') || '<div style="font-size:13px;color:var(--text-3);font-style:italic">No requirements entered yet.</div>';
+
+  // Recordings
+  const recList = document.getElementById('dev-detail-recordings');
+  recList.innerHTML = recordings.length ? recordings.map(r =>
+    `<div class="dev-upload-item">
+      <div class="dev-upload-item-left">
+        <div class="dev-upload-icon">${devFileIcon}</div>
+        <div class="dev-upload-info">
+          <div class="dev-upload-name">${r.filename}</div>
+          <div class="dev-upload-meta">${r.filesize ? r.filesize + ' · ' : ''}${new Date(r.uploaded_at).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+        </div>
+      </div>
+      <button class="dev-btn-dl" onclick="devFakeDl('${r.filename}')">${devDlIcon}Download</button>
+    </div>`
+  ).join('') : '';
+
+  // Upload zone
+  document.getElementById('dev-detail-upload-zone').onclick = () => devAddRecording(row.id);
+
+  // Sign-offs
+  devSignoffState = { supply: 'pending', demand: 'pending' };
+  signoffs.forEach(s => { devSignoffState[s.team] = s.decision; });
+
+  ['supply','demand'].forEach(team => {
+    const sig = signoffs.find(s => s.team === team);
+    const badge = document.getElementById('dev-badge-' + team);
+    const block = document.getElementById('dev-sb-' + team);
+    const noteEl = document.getElementById('dev-note-' + team);
+    const btnA = document.getElementById('dev-btn-app-' + team);
+    const btnR = document.getElementById('dev-btn-rej-' + team);
+
+    // Reset
+    block.className = 'dev-signoff-block';
+    noteEl.value = '';
+    noteEl.disabled = false;
+    btnA.disabled = false; btnR.disabled = false;
+
+    if (sig) {
+      noteEl.value = sig.note || '';
+      noteEl.disabled = true;
+      btnA.disabled = true; btnR.disabled = true;
+      if (sig.decision === 'approve') {
+        badge.className = 'dev-sig-badge dev-sig-approved'; badge.textContent = 'Approved';
+        block.className = 'dev-signoff-block approved';
+      } else {
+        badge.className = 'dev-sig-badge dev-sig-rejected'; badge.textContent = 'Changes requested';
+        block.className = 'dev-signoff-block rejected';
+      }
+    } else {
+      badge.className = 'dev-sig-badge dev-sig-pending'; badge.textContent = 'Pending';
+    }
+  });
+
+  devCheckLaunch();
+}
+
+// ── Add recording metadata ────────────────────────────────────────────────────
+async function devAddRecording(ivrId) {
+  const filename = prompt('Enter recording filename (e.g. test_qualified_01.mp3):');
+  if (!filename || !filename.trim()) return;
+  try {
+    await devSbFetch('ivr_recordings', {
+      method: 'POST',
+      body: JSON.stringify({ ivr_id: ivrId, filename: filename.trim(), filesize: null })
+    });
+    await devOpenDetail(ivrId);
+  } catch(e) {
+    alert('Could not save recording: ' + e.message);
+  }
 }
 
 function devFakeDl(filename) {
@@ -2041,7 +2197,8 @@ function devFakeDl(filename) {
   a.href = '#'; a.download = filename; a.click();
 }
 
-function devSignoff(team, action) {
+// ── Sign-offs ─────────────────────────────────────────────────────────────────
+async function devSignoff(team, action) {
   const note = document.getElementById('dev-note-' + team);
   const hint = document.getElementById('dev-hint-' + team);
   if (!note.value.trim()) {
@@ -2051,27 +2208,55 @@ function devSignoff(team, action) {
     return;
   }
   note.classList.remove('dev-note-required'); hint.classList.remove('visible');
-  devState[team] = action;
-  const badge = document.getElementById('dev-badge-' + team);
-  const block = document.getElementById('dev-sb-' + team);
-  const btnA = document.getElementById('dev-btn-app-' + team);
-  const btnR = document.getElementById('dev-btn-rej-' + team);
-  if (action === 'approve') {
-    badge.className = 'dev-sig-badge dev-sig-approved'; badge.textContent = 'Approved';
-    block.className = 'dev-signoff-block approved';
-  } else {
-    badge.className = 'dev-sig-badge dev-sig-rejected'; badge.textContent = 'Changes requested';
-    block.className = 'dev-signoff-block rejected';
+
+  try {
+    await devSbFetch('ivr_signoffs', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates,return=representation',
+      headers: { 'Prefer': 'resolution=merge-duplicates' },
+      body: JSON.stringify({
+        ivr_id: devCurrentIvr.id,
+        team,
+        decision: action,
+        note: note.value.trim()
+      })
+    });
+    devSignoffState[team] = action;
+
+    const badge = document.getElementById('dev-badge-' + team);
+    const block = document.getElementById('dev-sb-' + team);
+    const btnA  = document.getElementById('dev-btn-app-' + team);
+    const btnR  = document.getElementById('dev-btn-rej-' + team);
+    note.disabled = true; btnA.disabled = true; btnR.disabled = true;
+
+    if (action === 'approve') {
+      badge.className = 'dev-sig-badge dev-sig-approved'; badge.textContent = 'Approved';
+      block.className = 'dev-signoff-block approved';
+    } else {
+      badge.className = 'dev-sig-badge dev-sig-rejected'; badge.textContent = 'Changes requested';
+      block.className = 'dev-signoff-block rejected';
+    }
+    devCheckLaunch();
+
+    // If both approved, update IVR status to 'review'
+    if (devSignoffState.supply === 'approve' && devSignoffState.demand === 'approve') {
+      await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'approved' })
+      });
+      devCurrentIvr.status = 'approved';
+      await devLoadIvrs();
+    }
+  } catch(e) {
+    alert('Could not save sign-off: ' + e.message);
   }
-  btnA.disabled = true; btnR.disabled = true; note.disabled = true;
-  devCheckLaunch();
 }
 
 function devCheckLaunch() {
-  const allApproved = devState.supply === 'approve' && devState.demand === 'approve';
-  const anyRejected = Object.values(devState).includes('reject');
-  const pending = Object.values(devState).filter(v => v === 'pending').length;
-  const btn = document.getElementById('dev-btn-launch');
+  const allApproved = devSignoffState.supply === 'approve' && devSignoffState.demand === 'approve';
+  const anyRejected = Object.values(devSignoffState).includes('reject');
+  const pending = Object.values(devSignoffState).filter(v => v === 'pending').length;
+  const btn  = document.getElementById('dev-btn-launch');
   const gate = document.getElementById('dev-launch-gate');
   const icon = document.getElementById('dev-gate-icon');
   const text = document.getElementById('dev-gate-text');
@@ -2084,18 +2269,44 @@ function devCheckLaunch() {
     gate.style.cssText = 'border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;display:flex;align-items:center;gap:8px;margin-top:12px';
     icon.textContent = '✕'; text.textContent = 'Changes have been requested. Resolve before launch.';
   } else {
-    btn.disabled = true;
-    gate.style.cssText = '';
+    btn.disabled = true; gate.style.cssText = '';
     icon.textContent = '⏳'; text.textContent = `Waiting for ${pending} more sign-off${pending !== 1 ? 's' : ''} before launch is available.`;
   }
 }
 
-document.querySelectorAll('.dev-modal-backdrop').forEach(b => {
-  b.addEventListener('click', e => { if (e.target === b) b.classList.remove('open'); });
-});
-document.querySelectorAll('.dev-signoff-textarea').forEach(t => {
-  t.addEventListener('input', () => t.classList.remove('dev-note-required'));
-});
+async function devMarkLive() {
+  if (!devCurrentIvr) return;
+  try {
+    await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'live' })
+    });
+    devCloseModal('dev-modal-detail');
+    await devLoadIvrs();
+  } catch(e) {
+    alert('Could not update status: ' + e.message);
+  }
+}
+
+// ── Delete ────────────────────────────────────────────────────────────────────
+function devConfirmDelete(ivrId, name) {
+  devDeleteTarget = ivrId;
+  document.getElementById('dev-confirm-name').textContent = name;
+  document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
+  devOpenModal('dev-modal-confirm');
+}
+
+async function devDoDelete() {
+  if (!devDeleteTarget) return;
+  try {
+    await devSbFetch(`ivr_development?id=eq.${devDeleteTarget}`, { method: 'DELETE', prefer: '' });
+    devDeleteTarget = null;
+    devCloseModal('dev-modal-confirm');
+    await devLoadIvrs();
+  } catch(e) {
+    alert('Could not delete: ' + e.message);
+  }
+}
 
 // ─── BOOT ────────────────────────────────────────────────────────────────────
 recomputeStats();
