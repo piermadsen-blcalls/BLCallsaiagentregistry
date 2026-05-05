@@ -1510,12 +1510,15 @@ async function loadFromSupabase() {
           .sort((x,y) => y.revenue - x.revenue)
           .slice(0, 10);
         delete a._pubMap; delete a._advMap;
-        // Auto-update status based on calls in the selected window (never touch test agents)
-        if (a.status !== 'test') {
-          a.status = a.raw_calls > 0 ? 'live' : 'inactive';
-        }
       });
     }
+
+    // Auto-update status based on calls in the selected window (always runs, never touches test agents)
+    AGENTS.forEach(a => {
+      if (a.status !== 'test') {
+        a.status = a.raw_calls > 0 ? 'live' : 'inactive';
+      }
+    });
 
     if (latest && latest.length && latest[0].call_date) {
       const d = new Date(latest[0].call_date + 'T00:00:00');
