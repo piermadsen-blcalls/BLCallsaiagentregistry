@@ -1338,6 +1338,7 @@ function processUpdate() {
       match.paid_calls += paid_calls;
       match.revenue    += revenue;
       match.margin     += margin;
+      match.conversion  = conversion;
       match.avg_duration = avg_dur;
 
       // Build pub/adv breakdowns for preview
@@ -1361,14 +1362,17 @@ function processUpdate() {
     }
   });
 
-  // Finalize breakdowns and recompute conversion from totals
+  // Finalize breakdowns
   AGENTS.forEach(a => {
     if (a._pubMap) {
-      a.conversion = a.raw_calls > 0 ? a.paid_calls / a.raw_calls : 0;
       a.pubBreakdown = Object.entries(a._pubMap).map(([name,d]) => ({name,...d})).sort((x,y)=>y.raw_calls-x.raw_calls).slice(0,10);
       a.advBreakdown = Object.entries(a._advMap||{}).map(([name,d]) => ({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10);
     }
     delete a._updated; delete a._pubMap; delete a._advMap;
+    // Auto-update status based on calls in the selected window (never touch test agents)
+    if (a.status !== 'test') {
+      a.status = a.raw_calls > 0 ? 'live' : 'inactive';
+    }
   });
 
   const results = document.getElementById('update-results');
@@ -1480,6 +1484,7 @@ async function loadFromSupabase() {
         match.paid_calls += row.paid_calls || 0;
         match.revenue    += row.revenue    || 0;
         match.margin     += row.margin     || 0;
+        match.conversion  = row.conversion || match.conversion;
         match.avg_duration = row.avg_duration || match.avg_duration;
 
         const pub = row.publisher_name || '(unknown)';
@@ -1496,7 +1501,6 @@ async function loadFromSupabase() {
       });
 
       AGENTS.forEach(a => {
-        a.conversion = a.raw_calls > 0 ? a.paid_calls / a.raw_calls : 0;
         a.pubBreakdown = Object.entries(a._pubMap)
           .map(([name, d]) => ({ name, ...d }))
           .sort((x,y) => y.raw_calls - x.raw_calls)
@@ -1506,6 +1510,10 @@ async function loadFromSupabase() {
           .sort((x,y) => y.revenue - x.revenue)
           .slice(0, 10);
         delete a._pubMap; delete a._advMap;
+        // Auto-update status based on calls in the selected window (never touch test agents)
+        if (a.status !== 'test') {
+          a.status = a.raw_calls > 0 ? 'live' : 'inactive';
+        }
       });
     }
 
