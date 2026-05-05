@@ -1205,12 +1205,22 @@ function rtLabel(t) {
   return t === 'publisher-led' ? 'publisher-led' : t === 'advertiser-led' ? 'advertiser-led' : t === 'both' ? 'publisher + advertiser' : t === 'test-only' ? 'internal / test' : 'unknown';
 }
 
+function getEffectiveStatus(a) {
+  // Internal test agents always show as test
+  if (a.status === 'test') return 'test';
+  // If there are raw calls in the current data window, treat as live
+  if (a.raw_calls > 0) return 'live';
+  // Otherwise inactive
+  return 'inactive';
+}
+
 function renderCard(a, idx) {
   const isOpen = openAgent === idx;
+  const es = getEffectiveStatus(a);
   return `<div class="agent-card${isOpen?' open':''}" onclick="toggleAgent(${idx})" style="animation-delay:${(idx%12)*0.02}s">
     <div class="card-header">
       <span class="card-vtag ${vClass(a.vertical)}">${a.vertical}</span>
-      <span class="card-status status-${a.status}">${a.status==='live'?'Live':a.status==='test'?'Test':'Inactive'}</span>
+      <span class="card-status status-${es}">${es==='live'?'Live':es==='test'?'Test':'Inactive'}</span>
     </div>
     <div class="card-name">${a.name}</div>
     <div class="card-routing">${rtLabel(a.routingType)}</div>
@@ -1242,7 +1252,7 @@ function renderDrawer(a) {
     </tr>`).join('')}</tbody>
   </table><div class="canoe-count">${a.ivrTargets.length} total</div>` : '<div class="canoe-none">No IVR targets after listing search</div>';
 
-  const qualSection = a.status === 'test' ? '<div class="canoe-none">Internal test agent — no qualification logic</div>' :
+  const qualSection = getEffectiveStatus(a) === 'test' ? '<div class="canoe-none">Internal test agent — no qualification logic</div>' :
     hasQual ? `<div class="qual-list">${a.qualifying.map(q => `<div class="qual-item"><div class="qual-dot"></div>${q}</div>`).join('')}</div>${a.disqualify ? `<div class="qual-disqualify">Disqualifies: ${a.disqualify}</div>` : ''}` :
     '<div class="canoe-none">No qualification data on record</div>';
 
@@ -1843,7 +1853,7 @@ function buildDataSummary() {
     const pubList = (a.pubBreakdown||[]).slice(0,5).map(p => `${p.name} (${p.raw_calls} raw, ${p.paid_calls} paid, $${Math.round(p.revenue)})`).join('; ');
     const advList = (a.advBreakdown||[]).slice(0,5).map(d => `${d.name} (${d.raw_calls} raw, ${d.paid_calls} paid, $${Math.round(d.revenue)})`).join('; ');
     return `Agent: ${a.ivrName}
-  Vertical: ${a.vertical} | Status: ${a.status} | Routing: ${a.routingType}
+  Vertical: ${a.vertical} | Status: ${getEffectiveStatus(a)} | Routing: ${a.routingType}
   Metrics (${window}): ${a.raw_calls} raw calls, ${Math.round(a.paid_calls)} paid, ${a.conversion>0?(a.conversion*100).toFixed(1)+'%':' 0%'} conversion, $${Math.round(a.revenue)} revenue, $${Math.round(a.margin)} margin
   Top publishers: ${pubList || 'none'}
   Top advertisers: ${advList || 'none'}`;
