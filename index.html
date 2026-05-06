@@ -1507,9 +1507,11 @@ function toggleAgent(idx) {
   openAgent = idx;
   applyFilters();
   drawer.innerHTML = renderDrawer(AGENTS[idx]);
-  // Async: load and inject the test call link
-  injectTestCall(idx, AGENTS[idx].ivrName);
+  // Async: load and inject the test call link — runs after drawer is in DOM
+  const capturedIdx    = idx;
+  const capturedIvr    = AGENTS[idx].ivrName;
   requestAnimationFrame(() => {
+    injectTestCall(capturedIdx, capturedIvr);
     const rect = drawer.getBoundingClientRect();
     const bottomGap = rect.bottom - window.innerHeight;
     if (bottomGap > 0) window.scrollBy({ top: bottomGap + 24, behavior: 'smooth' });
