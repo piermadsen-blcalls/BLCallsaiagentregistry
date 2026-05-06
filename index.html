@@ -84,13 +84,28 @@
   .status-test { background: var(--amber-bg); color: var(--amber); }
   .status-inactive { background: var(--gray-bg); color: var(--text-3); }
   .card-name { font-family: var(--serif); font-size: 17px; font-weight: 400; color: var(--text); line-height: 1.3; margin-bottom: 5px; }
-  .card-routing { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-bottom: 14px; }
+  .card-routing { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-bottom: 10px; }
   .card-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding-top: 14px; border-top: 1px solid var(--border); }
   .metric-val { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--text); }
   .metric-val.zero { color: var(--text-3); }
   .metric-label { font-size: 10px; color: var(--text-3); margin-top: 2px; }
   .card-chevron { position: absolute; bottom: 18px; right: 18px; font-size: 13px; color: var(--text-3); transition: transform 0.2s; }
   .agent-card.open .card-chevron { transform: rotate(180deg); }
+
+  /* ── Test call row (NEW) ── */
+  .card-test-call { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; min-height: 20px; }
+  .card-test-link { font-size: 11px; color: var(--brand-navy); text-decoration: none; display: flex; align-items: center; gap: 4px; font-family: var(--sans); }
+  .card-test-link:hover { text-decoration: underline; }
+  .card-test-empty { font-size: 11px; color: var(--text-3); font-style: italic; }
+  .card-test-edit-btn { background: none; border: none; cursor: pointer; padding: 2px 5px; border-radius: 3px; color: var(--text-3); font-size: 11px; line-height: 1; transition: color 0.12s; flex-shrink: 0; }
+  .card-test-edit-btn:hover { color: var(--text); background: var(--bg); }
+  .card-test-input-row { display: flex; gap: 5px; align-items: center; width: 100%; }
+  .card-test-input { font-family: var(--mono); font-size: 10px; border: 1px solid var(--border-strong); border-radius: 4px; padding: 3px 7px; color: var(--text); background: var(--bg); outline: none; flex: 1; min-width: 0; transition: border-color 0.12s; }
+  .card-test-input:focus { border-color: var(--brand-navy); }
+  .card-test-save-btn { font-family: var(--sans); font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 4px; background: var(--brand-navy); color: white; border: none; cursor: pointer; flex-shrink: 0; white-space: nowrap; transition: opacity 0.12s; }
+  .card-test-save-btn:hover { opacity: 0.85; }
+  .card-test-cancel-btn { font-family: var(--sans); font-size: 10px; padding: 3px 7px; border-radius: 4px; background: none; color: var(--text-3); border: 1px solid var(--border-strong); cursor: pointer; flex-shrink: 0; transition: all 0.12s; }
+  .card-test-cancel-btn:hover { color: var(--text); border-color: var(--text); }
 
   /* Vertical colors */
   .v-home { background: #FFF4ED; color: #7C3D14; }
@@ -108,7 +123,7 @@
   .drawer-close { font-family: var(--sans); font-size: 12px; color: var(--text-2); background: none; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 6px 12px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.12s; }
   .drawer-close:hover { border-color: var(--text); color: var(--text); }
 
-  /* Drawer sections - always same order, same titles */
+  /* Drawer sections */
   .drawer-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
   @media (max-width: 760px) { .drawer-sections { grid-template-columns: 1fr; } }
   .drawer-col { display: flex; flex-direction: column; gap: 24px; }
@@ -413,12 +428,10 @@
   <!-- REQUEST -->
   <div id="tab-request" class="tab-pane">
     <div class="request-view">
-
       <div class="request-intro">
         <h2>Request a change</h2>
         <p>Fill out the form below. We'll help build the Jira ticket for you to copy.</p>
       </div>
-
       <div class="form-section">
         <label class="form-label">What kind of change?</label>
         <div class="type-grid">
@@ -442,8 +455,6 @@
         <textarea class="form-textarea" id="req-desc" placeholder="e.g. 'Buyer X is seeing unqualified calls — agent should confirm homeownership before transferring.'"></textarea>
       </div>
       <button class="form-submit" id="submit-btn" onclick="submitRequest()">Generate Jira ticket body →</button>
-
-      <!-- Ticket preview -->
       <div id="ticket-preview" style="display:none;margin-top:28px;border:1px solid var(--brand-navy);border-radius:var(--radius);overflow:hidden;">
         <div style="background:var(--brand-navy);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
           <div>
@@ -469,11 +480,9 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- FOOTER -->
   <!-- IN DEVELOPMENT -->
   <div id="tab-dev" class="tab-pane">
     <div class="dev-header-row">
@@ -499,7 +508,6 @@
   <div class="update-panel" id="update-panel">
     <h3>Update agent data</h3>
     <p>Run the query below in BigQuery, copy the results, and paste them into the box beneath. <strong>Safe to re-run the same dates</strong> — duplicate rows are automatically overwritten, never double-counted.</p>
-
     <div style="margin-bottom:20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
         <div>
@@ -510,7 +518,6 @@
       </div>
       <pre id="bq-sql" style="font-family:var(--mono);font-size:11.5px;color:var(--text);background:var(--bg);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:16px;overflow-x:auto;white-space:pre;line-height:1.7;pointer-events:none;cursor:default;"></pre>
     </div>
-
     <div style="font-size:12px;color:var(--text-2);margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-sm);border-left:3px solid var(--brand-mint);">
       <strong>Paste results here</strong> — tab-separated, header row included. Each row = one agent + one day + one publisher + one advertiser combination.
     </div>
@@ -523,9 +530,7 @@
 
 </div>
 
-<!-- DEV MODALS — outside .shell so position:fixed works correctly -->
-
-<!-- DEV: DELETE CONFIRM -->
+<!-- DEV MODALS -->
 <div class="dev-modal-backdrop" id="dev-modal-confirm">
   <div class="dev-modal dev-modal-sm">
     <div class="dev-modal-title" style="margin-bottom:8px">Delete this IVR?</div>
@@ -537,7 +542,6 @@
   </div>
 </div>
 
-<!-- DEV: NEW IVR MODAL -->
 <div class="dev-modal-backdrop" id="dev-modal-new">
   <div class="dev-modal">
     <div class="dev-modal-title">New AI IVR</div>
@@ -589,7 +593,6 @@
   </div>
 </div>
 
-<!-- DEV: DETAIL MODAL (dynamic — populated by JS) -->
 <div class="dev-modal-backdrop" id="dev-modal-detail">
   <div class="dev-modal">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px">
@@ -693,7 +696,7 @@
 </div>
 
 <script>
-// ─── CONFIG — update credentials here ────────────────────────────────────────
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
 const CONFIG = {
   jiraDomain:  'replydev.atlassian.net',
   jiraEmail:   'pier.madsen@buyerlink.com',
@@ -703,449 +706,49 @@ const CONFIG = {
 };
 // ─────────────────────────────────────────────────────────────────────────────
 const AGENTS = [
-  {
-    name: "Check For Transfers (Generic)",
-    ivrName: "ASCND AI Agent - Check For Transfers (Generic) - Outgoing",
-    vertical: "Other", status: "live", routingType: "advertiser-led",
-    qualifying: ["Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "Forbes Digital Marketing Inc. (dba Expertise LLC)", vertical: "Personal Injury Lawyer", campaign: "Expertise Call API - PI & MVA*****" },
-      { publisher: "", advertiser: "Vocara, Inc", vertical: "", campaign: "Auto Insurance (Insured) Inbounds - 2577 3" },
-      { publisher: "", advertiser: "Vocara, Inc", vertical: "", campaign: "Auto Insurance (Insured) Inbounds - 2577 2" },
-      { publisher: "", advertiser: "Vocara, Inc", vertical: "", campaign: "Auto Insurance (Insured) Inbounds - 2577 NJ" },
-      { publisher: "", advertiser: "Vocara, Inc", vertical: "", campaign: "Auto Insurance (Insured) Inbounds - 2577 1" },
-      { publisher: "Instar, Inc - DP", advertiser: "", vertical: "Home Insurance", campaign: "" }
-    ],
-    raw_calls:638, paid_calls:311, conversion:0.487, avg_duration:26.3, revenue:12129.62, margin:3856.74
-  },
-  {
-    name: "Roofing (Check for Transfers)",
-    ivrName: "ASCND AI Agent - Roofing (Check for Transfers) - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "both",
-    qualifying: ["Calling about a roofing project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "My Local Roofer (Variable Rate)", publisher: "Seoplana, LLC (dba. Hise Consulting) - DP" }
-    ],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Roofing", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "33 Mile Radius LLC", vertical: "Roofing", campaign: "" },
-      { publisher: "Seoplana, LLC (dba. Hise Consulting) - DP", advertiser: "", vertical: "Roofing", campaign: "" }
-    ],
-    raw_calls:2558, paid_calls:67, conversion:0.026, avg_duration:41.9, revenue:7746.51, margin:3102.97
-  },
-  {
-    name: "Auto Ins (Check 4 ins + Transfers)",
-    ivrName: "ASCND AI Agent - Auto Ins (Check 4 ins +Transfers) - Outgoing",
-    vertical: "Insurance", status: "live", routingType: "both",
-    qualifying: ["Calling about auto insurance", "Currently insured", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "General Auto Insurance (Variable Rate)", publisher: "Instar, Inc - DP" }
-    ],
-    ivrTargets: [
-      { publisher: "Instar, Inc - DP", advertiser: "", vertical: "Auto Insurance", campaign: "" },
-      { publisher: "", advertiser: "Oscar Young Agency, Inc (StateFarm S-Corp)", vertical: "", campaign: "Auto Insurance - Insured" },
-      { publisher: "1800Remodel (BH Direct Response) - DP", advertiser: "", vertical: "Auto Insurance (Insured)", campaign: "" },
-      { publisher: "OFFERweb, LLC *DP*", advertiser: "", vertical: "Auto Insurance (Insured)", campaign: "" },
-      { publisher: "This Or That Media, Inc. (dba. Hometown Quotes) - DP", advertiser: "", vertical: "Auto Insurance (Insured)", campaign: "" },
-      { publisher: "Visiqua, LLC - DP", advertiser: "", vertical: "Auto Insurance (Insured)", campaign: "" }
-    ],
-    raw_calls:1162, paid_calls:171, conversion:0.147, avg_duration:47.96, revenue:7113.87, margin:2984.22
-  },
-  {
-    name: "Plumber",
-    ivrName: "ASCND AI Agent - Plumber - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about plumbing services", "Lead source (disqualifies social/marketplace)"],
-    disqualify: "Facebook, Craigslist, Marketplace",
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Plumber", campaign: "" },
-      { publisher: "MarketCall Inc. - DP", advertiser: "ReachLocal, Inc. (dba LocaliQ)", vertical: "Plumber", campaign: "" }
-    ],
-    raw_calls:653, paid_calls:119, conversion:0.182, avg_duration:35.7, revenue:6265.36, margin:3658.48
-  },
-  {
-    name: "Pest Control",
-    ivrName: "ASCND  AI Agent - Pest Control - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Type of pest or animal issue", "Pest vs. animal classification confirmed"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [],
-    raw_calls:517, paid_calls:85, conversion:0.164, avg_duration:42.0, revenue:5752.93, margin:1592.51
-  },
-  {
-    name: "Outgoing - Multi-Category (GLS)",
-    ivrName: "ASCND AI Agent - Outgoing - Multi-Category (GLS)",
-    vertical: "Insurance", status: "live", routingType: "publisher-led",
-    qualifying: ["Auto insurance or other category", "Category selection: auto, home, health, TV/internet", "If auto: currently insured"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "Auto Insurance - AI IVR Filter - Variable Rate - Private", publisher: "" },
-      { campaign: "General Auto Insurance (Variable Rate)", publisher: "GLS Communications, LLC - DP" }
-    ],
-    ivrTargets: [],
-    raw_calls:4981, paid_calls:236, conversion:0.047, avg_duration:46.5, revenue:5086.99, margin:1526.03
-  },
-  {
-    name: "Auto Ins (ins, age, transfers)",
-    ivrName: "ASCND AI Agent - Auto Ins (ins, age, transfers) - Outgoing",
-    vertical: "Insurance", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about auto insurance", "Caller age", "Currently insured", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "hibu Inc.", vertical: "Auto Insurance (Insured)", campaign: "AARP Hartford Auto Insurance" }
-    ],
-    raw_calls:948, paid_calls:257, conversion:0.271, avg_duration:48.9, revenue:4665.87, margin:1593.99
-  },
-  {
-    name: "HVAC",
-    ivrName: "ASCND Ai Agent - hvac - outgoing",
-    vertical: "Home Services", status: "live", routingType: "both",
-    qualifying: ["Calling about an HVAC project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "My HVAC Now (Variable Rate)", publisher: "Seoplana, LLC (dba. Hise Consulting) - DP" }
-    ],
-    ivrTargets: [
-      { publisher: "Seoplana, LLC (dba. Hise Consulting) - DP", advertiser: "", vertical: "HVAC", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "HVAC", campaign: "" },
-      { publisher: "MarketCall Inc. - DP", advertiser: "ReachLocal, Inc. (dba LocaliQ)", vertical: "HVAC", campaign: "" },
-      { publisher: "MarketCall Inc. - DP - AI", advertiser: "", vertical: "HVAC", campaign: "" }
-    ],
-    raw_calls:904, paid_calls:57, conversion:0.063, avg_duration:34.9, revenue:4434.14, margin:2351.43
-  },
-  {
-    name: "Dentist (Check for Transfers)",
-    ivrName: "ASCND AI Agent - Dentist (Check for Transfers) - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about a new dental appointment"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "1800Remodel (BH Direct Response) - DP", advertiser: "", vertical: "Dentist", campaign: "" },
-      { publisher: "1800Remodel (BH Direct Response) - DP", advertiser: "", vertical: "dental", campaign: "" },
-      { publisher: "1800Remodel (BH Direct Response) - DP", advertiser: "", vertical: "Dentistry", campaign: "" },
-      { publisher: "Rex Direct Net, Inc. *DP*", advertiser: "", vertical: "Dentist", campaign: "" }
-    ],
-    raw_calls:473, paid_calls:132, conversion:0.279, avg_duration:20.8, revenue:2581.00, margin:984.85
-  },
-  {
-    name: "Auto Ins (FHQ)",
-    ivrName: "ASCND AI Agent - Auto Ins (FHQ) - Outgoing",
-    vertical: "Insurance", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about auto insurance", "Current provider / new policy", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "FastHomeQuote, LLC", vertical: "Auto Insurance (Insured)", campaign: "FastHomeQuote Call API" },
-      { publisher: "", advertiser: "FastHomeQuote, LLC", vertical: "Auto Insurance (Insured) - Homeowners", campaign: "FastHomeQuote Call API" },
-      { publisher: "", advertiser: "FastHomeQuote, LLC", vertical: "Auto Insurance (Uninsured) - Homeowners", campaign: "FastHomeQuote Call API" },
-      { publisher: "", advertiser: "FastHomeQuote, LLC", vertical: "Auto Insurance (Uninsured)", campaign: "FastHomeQuote Call API" },
-      { publisher: "", advertiser: "FastHomeQuote, LLC", vertical: "Auto Insurance (Insured) < 50", campaign: "FastHomeQuote Call API" }
-    ],
-    raw_calls:659, paid_calls:73, conversion:0.111, avg_duration:34.1, revenue:2256.62, margin:697.59
-  },
-  {
-    name: "Home Improvements",
-    ivrName: "ASCND AI Agent - Home Improvements - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "both",
-    qualifying: ["Type of home project or issue", "Clarifier if category unclear"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "Home Improvements (Variable Rate)", publisher: "" },
-      { campaign: "Home Improvements (Variable Rate)", publisher: "Direct2Market Digital Media Solutions, LLC - DP" },
-      { campaign: "Home Improvements (Variable Rate)", publisher: "Seoplana, LLC (dba. Hise Consulting) - DP" },
-      { campaign: "Home Improvements (Variable Rate)", publisher: "Dfw Marketing Group" }
-    ],
-    ivrTargets: [
-      { publisher: "", advertiser: "", vertical: "Handyman", campaign: "" }
-    ],
-    raw_calls:742, paid_calls:71, conversion:0.096, avg_duration:38.8, revenue:1659.36, margin:542.91
-  },
-  {
-    name: "Auto Accident PI Lawyer (Check for Transfers)",
-    ivrName: "ASCND AI Agent - Auto Accident Personal Injury Lawyer (Check for Transfers) - Outgoing",
-    vertical: "Legal", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling for an auto accident personal injury attorney", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "Forbes Digital Marketing Inc. (dba Expertise LLC)", vertical: "Car Accident Lawyers", campaign: "Expertise Call API - PI & MVA*****" },
-      { publisher: "", advertiser: "Forbes Digital Marketing Inc. (dba Expertise LLC)", vertical: "Auto Accident Personal Injury Lawyer", campaign: "Expertise Call API - PI & MVA*****" },
-      { publisher: "", advertiser: "Forbes Digital Marketing Inc. (dba Expertise LLC)", vertical: "Auto Accident PI Lawyer", campaign: "Expertise Call API - PI & MVA*****" },
-      { publisher: "", advertiser: "Avenue 5 Media LLC", vertical: "Auto Accident Personal Injury Lawyer", campaign: "Avenue 5 Call API - MVA" },
-      { publisher: "", advertiser: "Avenue 5 Media LLC", vertical: "Car Accident Lawyers", campaign: "Avenue 5 Call API - MVA" },
-      { publisher: "", advertiser: "Avenue 5 Media LLC", vertical: "Auto Accident PI Lawyer", campaign: "Avenue 5 Call API - MVA" }
-    ],
-    raw_calls:18, paid_calls:2, conversion:0.111, avg_duration:33.0, revenue:1351.00, margin:675.50
-  },
-  {
-    name: "Final Expense",
-    ivrName: "ASCND AI Agent - Final Expense - Outgoing",
-    vertical: "Financial", status: "live", routingType: "both",
-    qualifying: ["Calling about life insurance", "Caller age", "Caller placed this call themselves", "Awareness of potential fee"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "Life Insurance (Variable Rate)", publisher: "Krunch Contact LLC" }
-    ],
-    ivrTargets: [
-      { publisher: "Instar, Inc - DP", advertiser: "", vertical: "Final Expense", campaign: "" },
-      { publisher: "Ad Clicks Agency, LLC - DP", advertiser: "", vertical: "Final Expense", campaign: "" },
-      { publisher: "", advertiser: "", vertical: "Final Expense", campaign: "" },
-      { publisher: "", advertiser: "Oscar Young Agency, Inc (StateFarm S-Corp)", vertical: "Final Expense Transfers", campaign: "" }
-    ],
-    raw_calls:872, paid_calls:51, conversion:0.058, avg_duration:44.9, revenue:1277.06, margin:395.31
-  },
-  {
-    name: "Electrician",
-    ivrName: "ASCND Ai Agent - electrician - outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about an electrical project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Seoplana, LLC (dba. Hise Consulting) - DP", advertiser: "", vertical: "Electrician", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Electrician", campaign: "" },
-      { publisher: "MarketCall Inc. - DP", advertiser: "ReachLocal, Inc. (dba LocaliQ)", vertical: "Electrician", campaign: "" }
-    ],
-    raw_calls:153, paid_calls:25, conversion:0.163, avg_duration:30.0, revenue:1248.07, margin:557.43
-  },
-  {
-    name: "Bathroom Remodeling",
-    ivrName: "ASCND AI Agent - Bathroom Remodeling - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Bathroom-related project confirmed", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Bathroom Remodeling", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "33 Mile Radius LLC", vertical: "Bathroom Remodeling", campaign: "" },
-      { publisher: "Pointer Leads, LLC - DP", advertiser: "", vertical: "Bathroom Remodeling", campaign: "" },
-      { publisher: "Instar, Inc - DP - AI", advertiser: "", vertical: "Bathroom Remodeling", campaign: "" },
-      { publisher: "Instar, Inc - DP - AI", advertiser: "33 Mile Radius LLC", vertical: "Bathroom Remodeling", campaign: "" }
-    ],
-    raw_calls:92, paid_calls:8, conversion:0.087, avg_duration:38.9, revenue:698.21, margin:290.81
-  },
-  {
-    name: "Fiat Compliance",
-    ivrName: "ASCND AI Agent - Fiat Compliance - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Willing to be connected with an available provider", "If specific company requested: open to similar provider"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Fiat Partners - DP", advertiser: "eLocal USA LLC (API - RevShare)", vertical: "HVAC", campaign: "" },
-      { publisher: "Fiat Partners - DP", advertiser: "eLocal USA LLC (API - RevShare)", vertical: "Plumber", campaign: "" },
-      { publisher: "Fiat Partners - DP", advertiser: "eLocal USA LLC (API - RevShare)", vertical: "Electrician", campaign: "" }
-    ],
-    raw_calls:48, paid_calls:7, conversion:0.146, avg_duration:18.7, revenue:401.10, margin:80.22
-  },
-  {
-    name: "Windows",
-    ivrName: "ASCND AI Agent - Windows - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about window installation", "Lead source (disqualifies social/marketplace)"],
-    disqualify: "Facebook, Craigslist, Marketplace",
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "Thryv, Inc. (TLE)", vertical: "", campaign: "Renewal by Andersen" },
-      { publisher: "Let's Make a Lead LLC (dba Adopt A Contractor) - DP", advertiser: "Thryv, Inc. (TLE)", vertical: "", campaign: "Renewal by Andersen" }
-    ],
-    raw_calls:56, paid_calls:11, conversion:0.196, avg_duration:29.4, revenue:385.00, margin:157.50
-  },
-  {
-    name: "Gutters (Check for Transfers)",
-    ivrName: "ASCND AI Agent - Gutters (Check for Transfers) - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about a gutter project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Gutters", campaign: "" }
-    ],
-    raw_calls:21, paid_calls:4, conversion:0.190, avg_duration:56.0, revenue:286.47, margin:155.88
-  },
-  {
-    name: "Home Insurance",
-    ivrName: "ASCND AI Agent - Home Insurance - Outgoing",
-    vertical: "Insurance", status: "test", routingType: "test-only",
-    qualifying: ["Calling about home insurance", "Caller placed this call themselves"],
-    disqualify: null,
-    notes: "Promo number only (Pier Testing Promo). IVR targets not yet configured.",
-    publisherCampaigns: [],
-    ivrTargets: [],
-    raw_calls:54, paid_calls:4, conversion:0.074, avg_duration:23.5, revenue:183.10, margin:73.24
-  },
-  {
-    name: "Painter",
-    ivrName: "ASCND Ai Agent - painter - outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about a painting project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Painter", campaign: "" }
-    ],
-    raw_calls:36, paid_calls:4, conversion:0.111, avg_duration:29.25, revenue:176.39, margin:106.19
-  },
-  {
-    name: "Dental (Check for Transfers)",
-    ivrName: "ASCND Ai Agent - Dental (Check for Transfers) - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about a new dental appointment"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Dentist", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "dental", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Dentistry", campaign: "" }
-    ],
-    raw_calls:27, paid_calls:7, conversion:0.259, avg_duration:18.3, revenue:145.00, margin:23.00
-  },
-  {
-    name: "Appliance Repair",
-    ivrName: "ASCND Ai Agent - appliance repair - outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about appliance repair", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Appliance Repair", campaign: "" }
-    ],
-    raw_calls:41, paid_calls:2, conversion:0.049, avg_duration:33.5, revenue:48.00, margin:25.50
-  },
-  {
-    name: "Solar",
-    ivrName: "ASCND Ai Agent - solar- outgoing",
-    vertical: "Home Services", status: "inactive", routingType: "advertiser-led",
-    qualifying: ["Calling about a solar project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Solar", campaign: "" }
-    ],
-    raw_calls:9, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Spanish Final Expense",
-    ivrName: "ASCND AI Agent - Spanish Final Expense - Outgoing",
-    vertical: "Financial", status: "inactive", routingType: "advertiser-led",
-    qualifying: ["Calling about life insurance (Spanish)", "Caller age", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "", vertical: "", campaign: "Final Expense Inbounds - Spanish" }
-    ],
-    raw_calls:9, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Wildlife Removal",
-    ivrName: "ASCND  AI Agent - Wildlife Removal - Outgoing",
-    vertical: "Home Services", status: "inactive", routingType: "unknown",
-    qualifying: ["Type of animal issue", "Pest vs. wildlife classification confirmed"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [],
-    raw_calls:10, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Carpet Cleaning",
-    ivrName: "ASCND AI Agent - Carpet Cleaning - Outgoing",
-    vertical: "Home Services", status: "inactive", routingType: "advertiser-led",
-    qualifying: ["Calling about carpet cleaning", "Lead source (disqualifies social/marketplace)"],
-    disqualify: "Facebook, Craigslist, Marketplace",
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Carpet Cleaning", campaign: "" },
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Commercial Carpet Cleaning", campaign: "" }
-    ],
-    raw_calls:21, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Water Damage",
-    ivrName: "ASCND Ai Agent - water damage - outgoing",
-    vertical: "Home Services", status: "inactive", routingType: "advertiser-led",
-    qualifying: ["Calling about water damage", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Water Damage", campaign: "" }
-    ],
-    raw_calls:36, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Lawyer",
-    ivrName: "ASCND AI Agent - Lawyer - Outgoing",
-    vertical: "Legal", status: "inactive", routingType: "both",
-    qualifying: ["Type of legal help needed", "Up to 2 clarifiers to determine category", "Caller ZIP code"],
-    disqualify: null,
-    publisherCampaigns: [
-      { campaign: "Pier Testing Campaign", publisher: "" }
-    ],
-    ivrTargets: [
-      { publisher: "", advertiser: "", vertical: "Lawyer", campaign: "" }
-    ],
-    raw_calls:154, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Foundation",
-    ivrName: "ASCND Ai Agent - foundation - outgoing",
-    vertical: "Home Services", status: "inactive", routingType: "advertiser-led",
-    qualifying: ["Calling about a foundation or concrete project", "Caller placed this call themselves"],
-    disqualify: null,
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "Sales Magician LLC - DP", advertiser: "", vertical: "Foundation", campaign: "" }
-    ],
-    raw_calls:3, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  },
-  {
-    name: "Moving",
-    ivrName: "ASCND AI Agent - Moving - Outgoing",
-    vertical: "Home Services", status: "live", routingType: "advertiser-led",
-    qualifying: ["Calling about moving services", "Lead source (disqualifies social/marketplace)"],
-    disqualify: "Facebook, Craigslist, Marketplace",
-    publisherCampaigns: [],
-    ivrTargets: [
-      { publisher: "", advertiser: "Thryv, Inc. (TLE)", vertical: "Moving", campaign: "" },
-      { publisher: "", advertiser: "Thryv, Inc. (TLE)", vertical: "Long Distance Moving", campaign: "" }
-    ],
-    raw_calls:0, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0,
-    notes: "New agent — not yet in 30-day usage data."
-  },
-  {
-    name: "Self-Serve Test",
-    ivrName: "ASCND AI Agent - self-serve test- Outgoing",
-    vertical: "Other", status: "test", routingType: "test-only",
-    qualifying: [],
-    disqualify: null,
-    notes: "Internal test agent. Pier test promo number only. Not production traffic.",
-    publisherCampaigns: [],
-    ivrTargets: [],
-    raw_calls:0, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0
-  }
+  { name:"Check For Transfers (Generic)", ivrName:"ASCND AI Agent - Check For Transfers (Generic) - Outgoing", vertical:"Other", status:"live", routingType:"advertiser-led", qualifying:["Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"Forbes Digital Marketing Inc. (dba Expertise LLC)",vertical:"Personal Injury Lawyer",campaign:"Expertise Call API - PI & MVA*****"},{publisher:"",advertiser:"Vocara, Inc",vertical:"",campaign:"Auto Insurance (Insured) Inbounds - 2577 3"},{publisher:"",advertiser:"Vocara, Inc",vertical:"",campaign:"Auto Insurance (Insured) Inbounds - 2577 2"},{publisher:"",advertiser:"Vocara, Inc",vertical:"",campaign:"Auto Insurance (Insured) Inbounds - 2577 NJ"},{publisher:"",advertiser:"Vocara, Inc",vertical:"",campaign:"Auto Insurance (Insured) Inbounds - 2577 1"},{publisher:"Instar, Inc - DP",advertiser:"",vertical:"Home Insurance",campaign:""}], raw_calls:638, paid_calls:311, conversion:0.487, avg_duration:26.3, revenue:12129.62, margin:3856.74 },
+  { name:"Roofing (Check for Transfers)", ivrName:"ASCND AI Agent - Roofing (Check for Transfers) - Outgoing", vertical:"Home Services", status:"live", routingType:"both", qualifying:["Calling about a roofing project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[{campaign:"My Local Roofer (Variable Rate)",publisher:"Seoplana, LLC (dba. Hise Consulting) - DP"}], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Roofing",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"33 Mile Radius LLC",vertical:"Roofing",campaign:""},{publisher:"Seoplana, LLC (dba. Hise Consulting) - DP",advertiser:"",vertical:"Roofing",campaign:""}], raw_calls:2558, paid_calls:67, conversion:0.026, avg_duration:41.9, revenue:7746.51, margin:3102.97 },
+  { name:"Auto Ins (Check 4 ins + Transfers)", ivrName:"ASCND AI Agent - Auto Ins (Check 4 ins +Transfers) - Outgoing", vertical:"Insurance", status:"live", routingType:"both", qualifying:["Calling about auto insurance","Currently insured","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[{campaign:"General Auto Insurance (Variable Rate)",publisher:"Instar, Inc - DP"}], ivrTargets:[{publisher:"Instar, Inc - DP",advertiser:"",vertical:"Auto Insurance",campaign:""},{publisher:"",advertiser:"Oscar Young Agency, Inc (StateFarm S-Corp)",vertical:"",campaign:"Auto Insurance - Insured"},{publisher:"1800Remodel (BH Direct Response) - DP",advertiser:"",vertical:"Auto Insurance (Insured)",campaign:""},{publisher:"OFFERweb, LLC *DP*",advertiser:"",vertical:"Auto Insurance (Insured)",campaign:""},{publisher:"This Or That Media, Inc. (dba. Hometown Quotes) - DP",advertiser:"",vertical:"Auto Insurance (Insured)",campaign:""},{publisher:"Visiqua, LLC - DP",advertiser:"",vertical:"Auto Insurance (Insured)",campaign:""}], raw_calls:1162, paid_calls:171, conversion:0.147, avg_duration:47.96, revenue:7113.87, margin:2984.22 },
+  { name:"Plumber", ivrName:"ASCND AI Agent - Plumber - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about plumbing services","Lead source (disqualifies social/marketplace)"], disqualify:"Facebook, Craigslist, Marketplace", publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Plumber",campaign:""},{publisher:"MarketCall Inc. - DP",advertiser:"ReachLocal, Inc. (dba LocaliQ)",vertical:"Plumber",campaign:""}], raw_calls:653, paid_calls:119, conversion:0.182, avg_duration:35.7, revenue:6265.36, margin:3658.48 },
+  { name:"Pest Control", ivrName:"ASCND  AI Agent - Pest Control - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Type of pest or animal issue","Pest vs. animal classification confirmed"], disqualify:null, publisherCampaigns:[], ivrTargets:[], raw_calls:517, paid_calls:85, conversion:0.164, avg_duration:42.0, revenue:5752.93, margin:1592.51 },
+  { name:"Outgoing - Multi-Category (GLS)", ivrName:"ASCND AI Agent - Outgoing - Multi-Category (GLS)", vertical:"Insurance", status:"live", routingType:"publisher-led", qualifying:["Auto insurance or other category","Category selection: auto, home, health, TV/internet","If auto: currently insured"], disqualify:null, publisherCampaigns:[{campaign:"Auto Insurance - AI IVR Filter - Variable Rate - Private",publisher:""},{campaign:"General Auto Insurance (Variable Rate)",publisher:"GLS Communications, LLC - DP"}], ivrTargets:[], raw_calls:4981, paid_calls:236, conversion:0.047, avg_duration:46.5, revenue:5086.99, margin:1526.03 },
+  { name:"Auto Ins (ins, age, transfers)", ivrName:"ASCND AI Agent - Auto Ins (ins, age, transfers) - Outgoing", vertical:"Insurance", status:"live", routingType:"advertiser-led", qualifying:["Calling about auto insurance","Caller age","Currently insured","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"hibu Inc.",vertical:"Auto Insurance (Insured)",campaign:"AARP Hartford Auto Insurance"}], raw_calls:948, paid_calls:257, conversion:0.271, avg_duration:48.9, revenue:4665.87, margin:1593.99 },
+  { name:"HVAC", ivrName:"ASCND Ai Agent - hvac - outgoing", vertical:"Home Services", status:"live", routingType:"both", qualifying:["Calling about an HVAC project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[{campaign:"My HVAC Now (Variable Rate)",publisher:"Seoplana, LLC (dba. Hise Consulting) - DP"}], ivrTargets:[{publisher:"Seoplana, LLC (dba. Hise Consulting) - DP",advertiser:"",vertical:"HVAC",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"HVAC",campaign:""},{publisher:"MarketCall Inc. - DP",advertiser:"ReachLocal, Inc. (dba LocaliQ)",vertical:"HVAC",campaign:""},{publisher:"MarketCall Inc. - DP - AI",advertiser:"",vertical:"HVAC",campaign:""}], raw_calls:904, paid_calls:57, conversion:0.063, avg_duration:34.9, revenue:4434.14, margin:2351.43 },
+  { name:"Dentist (Check for Transfers)", ivrName:"ASCND AI Agent - Dentist (Check for Transfers) - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about a new dental appointment"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"1800Remodel (BH Direct Response) - DP",advertiser:"",vertical:"Dentist",campaign:""},{publisher:"1800Remodel (BH Direct Response) - DP",advertiser:"",vertical:"dental",campaign:""},{publisher:"1800Remodel (BH Direct Response) - DP",advertiser:"",vertical:"Dentistry",campaign:""},{publisher:"Rex Direct Net, Inc. *DP*",advertiser:"",vertical:"Dentist",campaign:""}], raw_calls:473, paid_calls:132, conversion:0.279, avg_duration:20.8, revenue:2581.00, margin:984.85 },
+  { name:"Auto Ins (FHQ)", ivrName:"ASCND AI Agent - Auto Ins (FHQ) - Outgoing", vertical:"Insurance", status:"live", routingType:"advertiser-led", qualifying:["Calling about auto insurance","Current provider / new policy","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"FastHomeQuote, LLC",vertical:"Auto Insurance (Insured)",campaign:"FastHomeQuote Call API"},{publisher:"",advertiser:"FastHomeQuote, LLC",vertical:"Auto Insurance (Insured) - Homeowners",campaign:"FastHomeQuote Call API"},{publisher:"",advertiser:"FastHomeQuote, LLC",vertical:"Auto Insurance (Uninsured) - Homeowners",campaign:"FastHomeQuote Call API"},{publisher:"",advertiser:"FastHomeQuote, LLC",vertical:"Auto Insurance (Uninsured)",campaign:"FastHomeQuote Call API"},{publisher:"",advertiser:"FastHomeQuote, LLC",vertical:"Auto Insurance (Insured) < 50",campaign:"FastHomeQuote Call API"}], raw_calls:659, paid_calls:73, conversion:0.111, avg_duration:34.1, revenue:2256.62, margin:697.59 },
+  { name:"Home Improvements", ivrName:"ASCND AI Agent - Home Improvements - Outgoing", vertical:"Home Services", status:"live", routingType:"both", qualifying:["Type of home project or issue","Clarifier if category unclear"], disqualify:null, publisherCampaigns:[{campaign:"Home Improvements (Variable Rate)",publisher:""},{campaign:"Home Improvements (Variable Rate)",publisher:"Direct2Market Digital Media Solutions, LLC - DP"},{campaign:"Home Improvements (Variable Rate)",publisher:"Seoplana, LLC (dba. Hise Consulting) - DP"},{campaign:"Home Improvements (Variable Rate)",publisher:"Dfw Marketing Group"}], ivrTargets:[{publisher:"",advertiser:"",vertical:"Handyman",campaign:""}], raw_calls:742, paid_calls:71, conversion:0.096, avg_duration:38.8, revenue:1659.36, margin:542.91 },
+  { name:"Auto Accident PI Lawyer (Check for Transfers)", ivrName:"ASCND AI Agent - Auto Accident Personal Injury Lawyer (Check for Transfers) - Outgoing", vertical:"Legal", status:"live", routingType:"advertiser-led", qualifying:["Calling for an auto accident personal injury attorney","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"Forbes Digital Marketing Inc. (dba Expertise LLC)",vertical:"Car Accident Lawyers",campaign:"Expertise Call API - PI & MVA*****"},{publisher:"",advertiser:"Forbes Digital Marketing Inc. (dba Expertise LLC)",vertical:"Auto Accident Personal Injury Lawyer",campaign:"Expertise Call API - PI & MVA*****"},{publisher:"",advertiser:"Forbes Digital Marketing Inc. (dba Expertise LLC)",vertical:"Auto Accident PI Lawyer",campaign:"Expertise Call API - PI & MVA*****"},{publisher:"",advertiser:"Avenue 5 Media LLC",vertical:"Auto Accident Personal Injury Lawyer",campaign:"Avenue 5 Call API - MVA"},{publisher:"",advertiser:"Avenue 5 Media LLC",vertical:"Car Accident Lawyers",campaign:"Avenue 5 Call API - MVA"},{publisher:"",advertiser:"Avenue 5 Media LLC",vertical:"Auto Accident PI Lawyer",campaign:"Avenue 5 Call API - MVA"}], raw_calls:18, paid_calls:2, conversion:0.111, avg_duration:33.0, revenue:1351.00, margin:675.50 },
+  { name:"Final Expense", ivrName:"ASCND AI Agent - Final Expense - Outgoing", vertical:"Financial", status:"live", routingType:"both", qualifying:["Calling about life insurance","Caller age","Caller placed this call themselves","Awareness of potential fee"], disqualify:null, publisherCampaigns:[{campaign:"Life Insurance (Variable Rate)",publisher:"Krunch Contact LLC"}], ivrTargets:[{publisher:"Instar, Inc - DP",advertiser:"",vertical:"Final Expense",campaign:""},{publisher:"Ad Clicks Agency, LLC - DP",advertiser:"",vertical:"Final Expense",campaign:""},{publisher:"",advertiser:"",vertical:"Final Expense",campaign:""},{publisher:"",advertiser:"Oscar Young Agency, Inc (StateFarm S-Corp)",vertical:"Final Expense Transfers",campaign:""}], raw_calls:872, paid_calls:51, conversion:0.058, avg_duration:44.9, revenue:1277.06, margin:395.31 },
+  { name:"Electrician", ivrName:"ASCND Ai Agent - electrician - outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about an electrical project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Seoplana, LLC (dba. Hise Consulting) - DP",advertiser:"",vertical:"Electrician",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Electrician",campaign:""},{publisher:"MarketCall Inc. - DP",advertiser:"ReachLocal, Inc. (dba LocaliQ)",vertical:"Electrician",campaign:""}], raw_calls:153, paid_calls:25, conversion:0.163, avg_duration:30.0, revenue:1248.07, margin:557.43 },
+  { name:"Bathroom Remodeling", ivrName:"ASCND AI Agent - Bathroom Remodeling - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Bathroom-related project confirmed","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Bathroom Remodeling",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"33 Mile Radius LLC",vertical:"Bathroom Remodeling",campaign:""},{publisher:"Pointer Leads, LLC - DP",advertiser:"",vertical:"Bathroom Remodeling",campaign:""},{publisher:"Instar, Inc - DP - AI",advertiser:"",vertical:"Bathroom Remodeling",campaign:""},{publisher:"Instar, Inc - DP - AI",advertiser:"33 Mile Radius LLC",vertical:"Bathroom Remodeling",campaign:""}], raw_calls:92, paid_calls:8, conversion:0.087, avg_duration:38.9, revenue:698.21, margin:290.81 },
+  { name:"Fiat Compliance", ivrName:"ASCND AI Agent - Fiat Compliance - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Willing to be connected with an available provider","If specific company requested: open to similar provider"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Fiat Partners - DP",advertiser:"eLocal USA LLC (API - RevShare)",vertical:"HVAC",campaign:""},{publisher:"Fiat Partners - DP",advertiser:"eLocal USA LLC (API - RevShare)",vertical:"Plumber",campaign:""},{publisher:"Fiat Partners - DP",advertiser:"eLocal USA LLC (API - RevShare)",vertical:"Electrician",campaign:""}], raw_calls:48, paid_calls:7, conversion:0.146, avg_duration:18.7, revenue:401.10, margin:80.22 },
+  { name:"Windows", ivrName:"ASCND AI Agent - Windows - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about window installation","Lead source (disqualifies social/marketplace)"], disqualify:"Facebook, Craigslist, Marketplace", publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"Thryv, Inc. (TLE)",vertical:"",campaign:"Renewal by Andersen"},{publisher:"Let's Make a Lead LLC (dba Adopt A Contractor) - DP",advertiser:"Thryv, Inc. (TLE)",vertical:"",campaign:"Renewal by Andersen"}], raw_calls:56, paid_calls:11, conversion:0.196, avg_duration:29.4, revenue:385.00, margin:157.50 },
+  { name:"Gutters (Check for Transfers)", ivrName:"ASCND AI Agent - Gutters (Check for Transfers) - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about a gutter project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Gutters",campaign:""}], raw_calls:21, paid_calls:4, conversion:0.190, avg_duration:56.0, revenue:286.47, margin:155.88 },
+  { name:"Home Insurance", ivrName:"ASCND AI Agent - Home Insurance - Outgoing", vertical:"Insurance", status:"test", routingType:"test-only", qualifying:["Calling about home insurance","Caller placed this call themselves"], disqualify:null, notes:"Promo number only (Pier Testing Promo). IVR targets not yet configured.", publisherCampaigns:[], ivrTargets:[], raw_calls:54, paid_calls:4, conversion:0.074, avg_duration:23.5, revenue:183.10, margin:73.24 },
+  { name:"Painter", ivrName:"ASCND Ai Agent - painter - outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about a painting project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Painter",campaign:""}], raw_calls:36, paid_calls:4, conversion:0.111, avg_duration:29.25, revenue:176.39, margin:106.19 },
+  { name:"Dental (Check for Transfers)", ivrName:"ASCND Ai Agent - Dental (Check for Transfers) - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about a new dental appointment"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Dentist",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"dental",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Dentistry",campaign:""}], raw_calls:27, paid_calls:7, conversion:0.259, avg_duration:18.3, revenue:145.00, margin:23.00 },
+  { name:"Appliance Repair", ivrName:"ASCND Ai Agent - appliance repair - outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about appliance repair","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Appliance Repair",campaign:""}], raw_calls:41, paid_calls:2, conversion:0.049, avg_duration:33.5, revenue:48.00, margin:25.50 },
+  { name:"Solar", ivrName:"ASCND Ai Agent - solar- outgoing", vertical:"Home Services", status:"inactive", routingType:"advertiser-led", qualifying:["Calling about a solar project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Solar",campaign:""}], raw_calls:9, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Spanish Final Expense", ivrName:"ASCND AI Agent - Spanish Final Expense - Outgoing", vertical:"Financial", status:"inactive", routingType:"advertiser-led", qualifying:["Calling about life insurance (Spanish)","Caller age","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"",vertical:"",campaign:"Final Expense Inbounds - Spanish"}], raw_calls:9, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Wildlife Removal", ivrName:"ASCND  AI Agent - Wildlife Removal - Outgoing", vertical:"Home Services", status:"inactive", routingType:"unknown", qualifying:["Type of animal issue","Pest vs. wildlife classification confirmed"], disqualify:null, publisherCampaigns:[], ivrTargets:[], raw_calls:10, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Carpet Cleaning", ivrName:"ASCND AI Agent - Carpet Cleaning - Outgoing", vertical:"Home Services", status:"inactive", routingType:"advertiser-led", qualifying:["Calling about carpet cleaning","Lead source (disqualifies social/marketplace)"], disqualify:"Facebook, Craigslist, Marketplace", publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Carpet Cleaning",campaign:""},{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Commercial Carpet Cleaning",campaign:""}], raw_calls:21, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Water Damage", ivrName:"ASCND Ai Agent - water damage - outgoing", vertical:"Home Services", status:"inactive", routingType:"advertiser-led", qualifying:["Calling about water damage","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Water Damage",campaign:""}], raw_calls:36, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Lawyer", ivrName:"ASCND AI Agent - Lawyer - Outgoing", vertical:"Legal", status:"inactive", routingType:"both", qualifying:["Type of legal help needed","Up to 2 clarifiers to determine category","Caller ZIP code"], disqualify:null, publisherCampaigns:[{campaign:"Pier Testing Campaign",publisher:""}], ivrTargets:[{publisher:"",advertiser:"",vertical:"Lawyer",campaign:""}], raw_calls:154, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Foundation", ivrName:"ASCND Ai Agent - foundation - outgoing", vertical:"Home Services", status:"inactive", routingType:"advertiser-led", qualifying:["Calling about a foundation or concrete project","Caller placed this call themselves"], disqualify:null, publisherCampaigns:[], ivrTargets:[{publisher:"Sales Magician LLC - DP",advertiser:"",vertical:"Foundation",campaign:""}], raw_calls:3, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 },
+  { name:"Moving", ivrName:"ASCND AI Agent - Moving - Outgoing", vertical:"Home Services", status:"live", routingType:"advertiser-led", qualifying:["Calling about moving services","Lead source (disqualifies social/marketplace)"], disqualify:"Facebook, Craigslist, Marketplace", publisherCampaigns:[], ivrTargets:[{publisher:"",advertiser:"Thryv, Inc. (TLE)",vertical:"Moving",campaign:""},{publisher:"",advertiser:"Thryv, Inc. (TLE)",vertical:"Long Distance Moving",campaign:""}], raw_calls:0, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0, notes:"New agent — not yet in 30-day usage data." },
+  { name:"Self-Serve Test", ivrName:"ASCND AI Agent - self-serve test- Outgoing", vertical:"Other", status:"test", routingType:"test-only", qualifying:[], disqualify:null, notes:"Internal test agent. Pier test promo number only. Not production traffic.", publisherCampaigns:[], ivrTargets:[], raw_calls:0, paid_calls:0, conversion:0, avg_duration:null, revenue:0, margin:0 }
 ];
 
-// ─── DATA WINDOW ─────────────────────────────────────────────────────────────
 // ─── DATE RANGE STATE ────────────────────────────────────────────────────────
 let activeRange = { start: null, end: null, label: '—', short: '—' };
 
 function toISO(d) { return d.toISOString().split('T')[0]; }
-
-function fmtDate(d) {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+function fmtDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
 
 function setPreset(days, el) {
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
-  const end   = new Date(); end.setHours(0,0,0,0);
+  const end = new Date(); end.setHours(0,0,0,0);
   const start = new Date(end); start.setDate(start.getDate() - (days - 1));
   activeRange = { start, end, label: fmtDate(start) + ' – ' + fmtDate(end), short: days + 'd' };
   document.getElementById('range-start').value = toISO(start);
@@ -1157,8 +760,7 @@ function setCustomRange() {
   const sv = document.getElementById('range-start').value;
   const ev = document.getElementById('range-end').value;
   if (!sv || !ev) return;
-  const s = new Date(sv + 'T00:00:00');
-  const e = new Date(ev + 'T00:00:00');
+  const s = new Date(sv + 'T00:00:00'), e = new Date(ev + 'T00:00:00');
   if (isNaN(s.getTime()) || isNaN(e.getTime()) || s > e) return;
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
   const days = Math.round((e - s) / 86400000) + 1;
@@ -1185,7 +787,6 @@ function recomputeStats() {
   document.getElementById('stat-margin').textContent  = '$' + (totalMargin/1000).toFixed(1) + 'k';
 }
 
-// Populate request form agent selector
 function populateAgentSelect() {
   const sel = document.getElementById('req-agent');
   sel.innerHTML = '<option value="">Select an agent...</option>';
@@ -1195,28 +796,99 @@ function populateAgentSelect() {
   });
 }
 
+// ─── TEST CALL MAP (loaded from Supabase) ────────────────────────────────────
+let testCallMap = {};  // keyed by ivr_name → url
+
+async function loadTestCalls() {
+  try {
+    const rows = await sbFetch('agent_test_calls?select=ivr_name,url');
+    if (rows) rows.forEach(r => { if (r.ivr_name && r.url) testCallMap[r.ivr_name] = r.url; });
+  } catch(e) {
+    console.warn('Could not load test calls:', e.message);
+  }
+}
+
+async function saveTestCall(ivrName, url) {
+  await sbFetch('agent_test_calls?on_conflict=ivr_name', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates' },
+    body: JSON.stringify({ ivr_name: ivrName, url: url || null, updated_at: new Date().toISOString() })
+  });
+  testCallMap[ivrName] = url;
+}
+
+// Render the test-call row for a card. Uses a unique DOM id per card so
+// inline edit doesn't interfere with other cards.
+function renderTestCallRow(ivrName, cardId) {
+  const url = testCallMap[ivrName] || '';
+  const safeId = cardId;
+  if (url) {
+    return `<div class="card-test-call" id="tc-row-${safeId}">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:var(--brand-navy)"><path d="M2 4a2 2 0 0 1 2-2h2a1 1 0 0 1 0 2H4v8h8v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4z" fill="currentColor"/><path d="M10 2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0V3.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L11.586 2H11a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
+      <a class="card-test-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Test call</a>
+      <button class="card-test-edit-btn" title="Edit URL" onclick="event.stopPropagation();tcShowEdit('${safeId}','${ivrName.replace(/'/g,"\\'")}')" >✎</button>
+    </div>`;
+  } else {
+    return `<div class="card-test-call" id="tc-row-${safeId}">
+      <span class="card-test-empty">No test call</span>
+      <button class="card-test-edit-btn" title="Add URL" onclick="event.stopPropagation();tcShowEdit('${safeId}','${ivrName.replace(/'/g,"\\'")}')">+ add</button>
+    </div>`;
+  }
+}
+
+function tcShowEdit(cardId, ivrName) {
+  const row = document.getElementById('tc-row-' + cardId);
+  if (!row) return;
+  const current = testCallMap[ivrName] || '';
+  row.innerHTML = `<div class="card-test-input-row">
+    <input class="card-test-input" id="tc-input-${cardId}" type="url" placeholder="https://..." value="${current}" onclick="event.stopPropagation()">
+    <button class="card-test-save-btn" onclick="event.stopPropagation();tcSave('${cardId}','${ivrName.replace(/'/g,"\\'")}')">Save</button>
+    <button class="card-test-cancel-btn" onclick="event.stopPropagation();tcCancel('${cardId}','${ivrName.replace(/'/g,"\\'")}')">✕</button>
+  </div>`;
+  const inp = document.getElementById('tc-input-' + cardId);
+  if (inp) { inp.focus(); inp.select(); }
+}
+
+async function tcSave(cardId, ivrName) {
+  const inp = document.getElementById('tc-input-' + cardId);
+  if (!inp) return;
+  const url = inp.value.trim();
+  const btn = inp.parentElement.querySelector('.card-test-save-btn');
+  if (btn) { btn.textContent = '…'; btn.disabled = true; }
+  try {
+    await saveTestCall(ivrName, url);
+  } catch(e) {
+    alert('Could not save: ' + e.message);
+  }
+  // Re-render just this row
+  const row = document.getElementById('tc-row-' + cardId);
+  if (row) row.outerHTML = renderTestCallRow(ivrName, cardId);
+}
+
+function tcCancel(cardId, ivrName) {
+  const row = document.getElementById('tc-row-' + cardId);
+  if (row) row.outerHTML = renderTestCallRow(ivrName, cardId);
+}
+
 // ─── RENDER ──────────────────────────────────────────────────────────────────
 let activeFilter = 'all', openAgent = null;
 
 function vClass(v) {
-  return v === 'Home Services' ? 'v-home' : v === 'Insurance' ? 'v-insurance' : v === 'Legal' ? 'v-legal' : v === 'Financial' ? 'v-financial' : 'v-other';
+  return v==='Home Services'?'v-home':v==='Insurance'?'v-insurance':v==='Legal'?'v-legal':v==='Financial'?'v-financial':'v-other';
 }
 function rtLabel(t) {
-  return t === 'publisher-led' ? 'publisher-led' : t === 'advertiser-led' ? 'advertiser-led' : t === 'both' ? 'publisher + advertiser' : t === 'test-only' ? 'internal / test' : 'unknown';
+  return t==='publisher-led'?'publisher-led':t==='advertiser-led'?'advertiser-led':t==='both'?'publisher + advertiser':t==='test-only'?'internal / test':'unknown';
 }
-
 function getEffectiveStatus(a) {
-  // Internal test agents always show as test
-  if (a.status === 'test') return 'test';
-  // If there are raw calls in the current data window, treat as live
-  if (a.raw_calls > 0) return 'live';
-  // Otherwise inactive
+  if (a.status==='test') return 'test';
+  if (a.raw_calls>0) return 'live';
   return 'inactive';
 }
 
 function renderCard(a, idx) {
   const isOpen = openAgent === idx;
   const es = getEffectiveStatus(a);
+  const cardId = 'c' + idx;
   return `<div class="agent-card${isOpen?' open':''}" onclick="toggleAgent(${idx})" style="animation-delay:${(idx%12)*0.02}s">
     <div class="card-header">
       <span class="card-vtag ${vClass(a.vertical)}">${a.vertical}</span>
@@ -1224,6 +896,7 @@ function renderCard(a, idx) {
     </div>
     <div class="card-name">${a.name}</div>
     <div class="card-routing">${rtLabel(a.routingType)}</div>
+    ${renderTestCallRow(a.ivrName, cardId)}
     <div class="card-metrics">
       <div><div class="metric-val${a.raw_calls===0?' zero':''}">${a.raw_calls.toLocaleString()}</div><div class="metric-label">raw calls</div></div>
       <div><div class="metric-val${a.paid_calls===0?' zero':''}">${Math.round(a.paid_calls)}</div><div class="metric-label">paid calls</div></div>
@@ -1238,122 +911,59 @@ function renderDrawer(a) {
   const hasIVR = a.ivrTargets.length > 0;
   const hasQual = a.qualifying.length > 0;
 
-  const pcTable = hasPC ? `<table class="canoe-table">
-    <thead><tr><th>Api Campaign</th><th>Publisher</th></tr></thead>
-    <tbody>${a.publisherCampaigns.map(p => `<tr><td>${p.campaign}</td><td class="${p.publisher?'':'muted'}">${p.publisher||'—'}</td></tr>`).join('')}</tbody>
-  </table><div class="canoe-count">${a.publisherCampaigns.length} total</div>` : '<div class="canoe-none">No publisher campaign IVRs configured</div>';
+  const pcTable = hasPC ? `<table class="canoe-table"><thead><tr><th>Api Campaign</th><th>Publisher</th></tr></thead><tbody>${a.publisherCampaigns.map(p=>`<tr><td>${p.campaign}</td><td class="${p.publisher?'':'muted'}">${p.publisher||'—'}</td></tr>`).join('')}</tbody></table><div class="canoe-count">${a.publisherCampaigns.length} total</div>` : '<div class="canoe-none">No publisher campaign IVRs configured</div>';
+  const ivrTable = hasIVR ? `<table class="canoe-table"><thead><tr><th>Publisher</th><th>Advertiser</th><th>Vertical</th></tr></thead><tbody>${a.ivrTargets.map(t=>`<tr><td class="${t.publisher?'':'muted'}">${t.publisher||'—'}</td><td class="${t.advertiser?'':'muted'}">${t.advertiser||'—'}</td><td class="${t.vertical?'':'muted'}">${t.vertical||'—'}</td></tr>`).join('')}</tbody></table><div class="canoe-count">${a.ivrTargets.length} total</div>` : '<div class="canoe-none">No IVR targets after listing search</div>';
+  const qualSection = getEffectiveStatus(a)==='test' ? '<div class="canoe-none">Internal test agent — no qualification logic</div>' : hasQual ? `<div class="qual-list">${a.qualifying.map(q=>`<div class="qual-item"><div class="qual-dot"></div>${q}</div>`).join('')}</div>${a.disqualify?`<div class="qual-disqualify">Disqualifies: ${a.disqualify}</div>`:''}` : '<div class="canoe-none">No qualification data on record</div>';
+  const cv = a.conversion>0?(a.conversion*100).toFixed(1)+'%':'—';
 
-  const ivrTable = hasIVR ? `<table class="canoe-table">
-    <thead><tr><th>Publisher</th><th>Advertiser</th><th>Vertical</th></tr></thead>
-    <tbody>${a.ivrTargets.map(t => `<tr>
-      <td class="${t.publisher?'':'muted'}">${t.publisher||'—'}</td>
-      <td class="${t.advertiser?'':'muted'}">${t.advertiser||'—'}</td>
-      <td class="${t.vertical?'':'muted'}">${t.vertical||'—'}</td>
-    </tr>`).join('')}</tbody>
-  </table><div class="canoe-count">${a.ivrTargets.length} total</div>` : '<div class="canoe-none">No IVR targets after listing search</div>';
+  const pubs = a.pubBreakdown||[];
+  const pubRows = pubs.length ? pubs.map(p=>`<tr><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td></tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
+  const pubTable = `<table class="canoe-table"><thead><tr><th>Publisher</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead><tbody>${pubRows}</tbody></table>${pubs.length?`<div class="canoe-count">top ${pubs.length} by volume</div>`:''}`;
 
-  const qualSection = getEffectiveStatus(a) === 'test' ? '<div class="canoe-none">Internal test agent — no qualification logic</div>' :
-    hasQual ? `<div class="qual-list">${a.qualifying.map(q => `<div class="qual-item"><div class="qual-dot"></div>${q}</div>`).join('')}</div>${a.disqualify ? `<div class="qual-disqualify">Disqualifies: ${a.disqualify}</div>` : ''}` :
-    '<div class="canoe-none">No qualification data on record</div>';
+  const advs = a.advBreakdown||[];
+  const advRows = advs.length ? advs.map(p=>`<tr><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td><td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td></tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
+  const advTable = `<table class="canoe-table"><thead><tr><th>Advertiser</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead><tbody>${advRows}</tbody></table>${advs.length?`<div class="canoe-count">top ${advs.length} by revenue</div>`:''}`;
 
-  const cv = a.conversion > 0 ? (a.conversion*100).toFixed(1)+'%' : '—';
-
-  // Publisher traffic breakdown
-  const pubs = a.pubBreakdown || [];
-  const pubRows = pubs.length ? pubs.map(p => `<tr>
-    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td>
-  </tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
-
-  const pubTable = `<table class="canoe-table">
-    <thead><tr><th>Publisher</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead>
-    <tbody>${pubRows}</tbody>
-  </table>${pubs.length ? `<div class="canoe-count">top ${pubs.length} by volume</div>` : ''}`;
-
-  // Advertiser breakdown
-  const advs = a.advBreakdown || [];
-  const advRows = advs.length ? advs.map(p => `<tr>
-    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.raw_calls.toLocaleString()}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">${p.paid_calls}</td>
-    <td style="text-align:right;font-family:var(--mono);font-size:11px;">$${Math.round(p.revenue).toLocaleString()}</td>
-  </tr>`).join('') : '<tr><td colspan="4" style="color:var(--text-3);font-style:italic;padding:8px 0;">No data for selected period</td></tr>';
-
-  const advTable = `<table class="canoe-table">
-    <thead><tr><th>Advertiser</th><th style="text-align:right">Raw</th><th style="text-align:right">Paid</th><th style="text-align:right">Revenue</th></tr></thead>
-    <tbody>${advRows}</tbody>
-  </table>${advs.length ? `<div class="canoe-count">top ${advs.length} by revenue</div>` : ''}`;
-
-  return `<div class="detail-drawer">
-    <div class="drawer-inner">
-      <div class="drawer-top">
-        <div>
-          <div class="drawer-title">${a.name}</div>
-          <div class="drawer-meta">${a.vertical} · ${rtLabel(a.routingType)}${a.notes?` · <em style="color:var(--amber)">${a.notes}</em>`:''}</div>
-        </div>
-        <button class="drawer-close" onclick="closeDrawer(event)">close ×</button>
+  return `<div class="detail-drawer"><div class="drawer-inner">
+    <div class="drawer-top">
+      <div><div class="drawer-title">${a.name}</div><div class="drawer-meta">${a.vertical} · ${rtLabel(a.routingType)}${a.notes?` · <em style="color:var(--amber)">${a.notes}</em>`:''}</div></div>
+      <button class="drawer-close" onclick="closeDrawer(event)">close ×</button>
+    </div>
+    <div class="drawer-sections">
+      <div class="drawer-col">
+        <div class="dsec"><div class="dsec-title">Qualifying for</div>${qualSection}</div>
+        <div class="dsec"><div class="dsec-title">Publisher Campaign IVRs</div>${pcTable}</div>
       </div>
-
-      <div class="drawer-sections">
-        <div class="drawer-col">
-          <div class="dsec">
-            <div class="dsec-title">Qualifying for</div>
-            ${qualSection}
-          </div>
-          <div class="dsec">
-            <div class="dsec-title">Publisher Campaign IVRs</div>
-            ${pcTable}
-          </div>
-        </div>
-        <div class="drawer-col">
-          <div class="dsec">
-            <div class="dsec-title">IVR Targets — After Listing Search</div>
-            ${ivrTable}
-          </div>
-        </div>
-      </div>
-
-      <div class="drawer-sections" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
-        <div class="drawer-col">
-          <div class="dsec">
-            <div class="dsec-title">Publishers sending traffic — ${activeRange.label}</div>
-            ${pubTable}
-          </div>
-        </div>
-        <div class="drawer-col">
-          <div class="dsec">
-            <div class="dsec-title">Advertisers buying calls — ${activeRange.label}</div>
-            ${advTable}
-          </div>
-        </div>
-      </div>
-
-      <div class="perf-strip">
-        <div class="perf-item"><div class="perf-val${a.raw_calls===0?' zero':''}">${a.raw_calls.toLocaleString()}</div><div class="perf-lbl">Raw calls (${activeRange.short})</div></div>
-        <div class="perf-item"><div class="perf-val${a.paid_calls===0?' zero':''}">${Math.round(a.paid_calls)}</div><div class="perf-lbl">Paid calls</div></div>
-        <div class="perf-item"><div class="perf-val${a.conversion===0?' zero':''}">${cv}</div><div class="perf-lbl">Conversion rate</div></div>
-        <div class="perf-item"><div class="perf-val${a.revenue===0?' zero':''}">$${Math.round(a.revenue).toLocaleString()}</div><div class="perf-lbl">Revenue — ${activeRange.label}</div></div>
-        <div class="perf-item"><div class="perf-val${a.margin===0?' zero':''}">$${Math.round(a.margin).toLocaleString()}</div><div class="perf-lbl">Direct margin — ${activeRange.label}</div></div>
-      </div>
-
-      <div class="drawer-cta">
-        <p>Need to update this agent's routing, script, or qualification logic?</p>
-        <button class="btn-primary" onclick="goToRequest('${a.ivrName.replace(/'/g,"\\'")}')">Request a change ↗</button>
+      <div class="drawer-col">
+        <div class="dsec"><div class="dsec-title">IVR Targets — After Listing Search</div>${ivrTable}</div>
       </div>
     </div>
-  </div>`;
+    <div class="drawer-sections" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+      <div class="drawer-col"><div class="dsec"><div class="dsec-title">Publishers sending traffic — ${activeRange.label}</div>${pubTable}</div></div>
+      <div class="drawer-col"><div class="dsec"><div class="dsec-title">Advertisers buying calls — ${activeRange.label}</div>${advTable}</div></div>
+    </div>
+    <div class="perf-strip">
+      <div class="perf-item"><div class="perf-val${a.raw_calls===0?' zero':''}">${a.raw_calls.toLocaleString()}</div><div class="perf-lbl">Raw calls (${activeRange.short})</div></div>
+      <div class="perf-item"><div class="perf-val${a.paid_calls===0?' zero':''}">${Math.round(a.paid_calls)}</div><div class="perf-lbl">Paid calls</div></div>
+      <div class="perf-item"><div class="perf-val${a.conversion===0?' zero':''}">${cv}</div><div class="perf-lbl">Conversion rate</div></div>
+      <div class="perf-item"><div class="perf-val${a.revenue===0?' zero':''}">$${Math.round(a.revenue).toLocaleString()}</div><div class="perf-lbl">Revenue — ${activeRange.label}</div></div>
+      <div class="perf-item"><div class="perf-val${a.margin===0?' zero':''}">$${Math.round(a.margin).toLocaleString()}</div><div class="perf-lbl">Direct margin — ${activeRange.label}</div></div>
+    </div>
+    <div class="drawer-cta">
+      <p>Need to update this agent's routing, script, or qualification logic?</p>
+      <button class="btn-primary" onclick="goToRequest('${a.ivrName.replace(/'/g,"\\'")}')">Request a change ↗</button>
+    </div>
+  </div></div>`;
 }
 
 function getSorted(arr) {
   const s = document.getElementById('sort-select').value;
   return [...arr].sort((a,b) => {
-    if (s === 'name') return a.name.localeCompare(b.name);
-    if (s === 'revenue') return b.revenue - a.revenue;
-    if (s === 'margin') return b.margin - a.margin;
-    if (s === 'calls') return b.raw_calls - a.raw_calls;
-    if (s === 'conversion') return b.conversion - a.conversion;
+    if (s==='name') return a.name.localeCompare(b.name);
+    if (s==='revenue') return b.revenue-a.revenue;
+    if (s==='margin') return b.margin-a.margin;
+    if (s==='calls') return b.raw_calls-a.raw_calls;
+    if (s==='conversion') return b.conversion-a.conversion;
     return 0;
   });
 }
@@ -1363,30 +973,20 @@ function applyFilters() {
   const drawer = document.getElementById('drawer-container');
   drawer.innerHTML = '';
   openAgent = null;
-
   let filtered = AGENTS.map((a,i) => ({a,i})).filter(({a}) => {
-    if (activeFilter !== 'all' && a.vertical !== activeFilter) return false;
+    if (activeFilter!=='all' && a.vertical!==activeFilter) return false;
     if (!q) return true;
-    const hay = [a.name, a.vertical, a.routingType,
-      ...(a.qualifying||[]),
-      ...a.publisherCampaigns.map(p => p.publisher+' '+p.campaign),
-      ...a.ivrTargets.map(t => [t.publisher,t.advertiser,t.vertical,t.campaign].join(' '))
-    ].join(' ').toLowerCase();
+    const hay = [a.name,a.vertical,a.routingType,...(a.qualifying||[]),...a.publisherCampaigns.map(p=>p.publisher+' '+p.campaign),...a.ivrTargets.map(t=>[t.publisher,t.advertiser,t.vertical,t.campaign].join(' '))].join(' ').toLowerCase();
     return hay.includes(q);
   });
-
-  // Sort using original indices mapped to agents
-  const sortedAgents = getSorted(filtered.map(f => f.a));
-  const remapped = sortedAgents.map(a => ({ a, i: AGENTS.indexOf(a) }));
-
-  document.getElementById('agents-grid').innerHTML = remapped.length
-    ? remapped.map(({a,i}) => renderCard(a,i)).join('')
-    : '<div class="empty">No agents match.</div>';
+  const sortedAgents = getSorted(filtered.map(f=>f.a));
+  const remapped = sortedAgents.map(a=>({a, i:AGENTS.indexOf(a)}));
+  document.getElementById('agents-grid').innerHTML = remapped.length ? remapped.map(({a,i})=>renderCard(a,i)).join('') : '<div class="empty">No agents match.</div>';
 }
 
 function setFilter(v, el) {
   activeFilter = v;
-  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   applyFilters();
 }
@@ -1395,24 +995,15 @@ let savedScrollY = 0;
 
 function toggleAgent(idx) {
   const drawer = document.getElementById('drawer-container');
-  if (openAgent === idx) {
-    openAgent = null;
-    drawer.innerHTML = '';
-    applyFilters();
-    window.scrollTo({ top: savedScrollY, behavior: 'smooth' });
-    return;
-  }
+  if (openAgent===idx) { openAgent=null; drawer.innerHTML=''; applyFilters(); window.scrollTo({top:savedScrollY,behavior:'smooth'}); return; }
   savedScrollY = window.scrollY;
   openAgent = idx;
   applyFilters();
   drawer.innerHTML = renderDrawer(AGENTS[idx]);
-  // After render, scroll just enough so the bottom of the drawer is visible
   requestAnimationFrame(() => {
     const rect = drawer.getBoundingClientRect();
     const bottomGap = rect.bottom - window.innerHeight;
-    if (bottomGap > 0) {
-      window.scrollBy({ top: bottomGap + 24, behavior: 'smooth' });
-    }
+    if (bottomGap>0) window.scrollBy({top:bottomGap+24,behavior:'smooth'});
   });
 }
 
@@ -1421,13 +1012,13 @@ function closeDrawer(e) {
   openAgent = null;
   document.getElementById('drawer-container').innerHTML = '';
   applyFilters();
-  window.scrollTo({ top: savedScrollY, behavior: 'smooth' });
+  window.scrollTo({top:savedScrollY,behavior:'smooth'});
 }
 
-// ─── TABS / FORM ─────────────────────────────────────────────────────────────
+// ─── TABS / FORM ──────────────────────────────────────────────────────────────
 function switchTab(id, el) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
 }
@@ -1441,44 +1032,32 @@ function goToRequest(ivrName) {
 let selTypeVal = 'modify';
 function selType(el, type) {
   selTypeVal = type;
-  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('agent-sel-row').style.display = (type==='modify'||type==='bug') ? 'block' : 'none';
+  document.getElementById('agent-sel-row').style.display = (type==='modify'||type==='bug')?'block':'none';
 }
-// ─── JIRA TICKET BUILDER ─────────────────────────────────────────────────────
 
-const TYPE_LABELS = {
-  modify:   'Modify agent',
-  new:      'New agent request',
-  bug:      'Issue report',
-  question: 'Question'
-};
+// ─── JIRA TICKET BUILDER ──────────────────────────────────────────────────────
+const TYPE_LABELS = { modify:'Modify agent', new:'New agent request', bug:'Issue report', question:'Question' };
 
 function submitRequest() {
   const name  = document.getElementById('req-name').value.trim();
   const desc  = document.getElementById('req-desc').value.trim();
   const agent = document.getElementById('req-agent').value;
-  if (!name || !desc) { alert('Please fill in your name and a description.'); return; }
-
-  const typeLabel = TYPE_LABELS[selTypeVal] || selTypeVal;
-  const summary   = agent
-    ? `[${typeLabel}] ${agent}`
-    : `[${typeLabel}] ${desc.slice(0, 60)}${desc.length > 60 ? '…' : ''}`;
-  const fullDesc  = `Submitted by: ${name}\nType: ${typeLabel}${agent ? '\nAgent: ' + agent : ''}\n\n${desc}`;
-
-  // Show preview
+  if (!name||!desc) { alert('Please fill in your name and a description.'); return; }
+  const typeLabel = TYPE_LABELS[selTypeVal]||selTypeVal;
+  const summary   = agent ? `[${typeLabel}] ${agent}` : `[${typeLabel}] ${desc.slice(0,60)}${desc.length>60?'…':''}`;
+  const fullDesc  = `Submitted by: ${name}\nType: ${typeLabel}${agent?'\nAgent: '+agent:''}\n\n${desc}`;
   document.getElementById('preview-summary').textContent = summary;
   document.getElementById('preview-desc').textContent    = fullDesc;
   document.getElementById('ticket-preview').style.display = 'block';
-  document.getElementById('ticket-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('ticket-preview').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function buildBQSQL() {
-  // Last 5 full days = 5 days ago through yesterday (both relative to local today)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const end   = new Date(today); end.setDate(end.getDate() - 1);       // yesterday
-  const start = new Date(today); start.setDate(start.getDate() - 5);   // 5 days ago
+  const today = new Date(); today.setHours(0,0,0,0);
+  const end   = new Date(today); end.setDate(end.getDate()-1);
+  const start = new Date(today); start.setDate(start.getDate()-5);
   const fmt = d => d.toISOString().split('T')[0];
   return `SELECT
   ivr_name,
@@ -1499,192 +1078,100 @@ ORDER BY call_date DESC, revenue DESC`;
 }
 
 function copySQL(btn) {
-  const sql = document.getElementById('bq-sql').textContent;
-  navigator.clipboard.writeText(sql.trim()).then(() => {
-    btn.textContent = 'Copied!';
-    btn.style.background = 'var(--teal-bg)';
-    btn.style.color = 'var(--teal)';
-    setTimeout(() => {
-      btn.textContent = 'Copy query';
-      btn.style.background = '';
-      btn.style.color = '';
-    }, 2000);
+  navigator.clipboard.writeText(document.getElementById('bq-sql').textContent.trim()).then(() => {
+    btn.textContent='Copied!'; btn.style.background='var(--teal-bg)'; btn.style.color='var(--teal)';
+    setTimeout(()=>{ btn.textContent='Copy query'; btn.style.background=''; btn.style.color=''; },2000);
   });
 }
 
 function copyField(id, btn) {
-  const text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'Copied!';
-    btn.style.color = 'var(--brand-mint)';
-    btn.style.borderColor = 'var(--brand-mint)';
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 2000);
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+    btn.textContent='Copied!'; btn.style.color='var(--brand-mint)'; btn.style.borderColor='var(--brand-mint)';
+    setTimeout(()=>{ btn.textContent='Copy'; btn.style.color=''; btn.style.borderColor=''; },2000);
   });
 }
 
-// ─── UPDATE DATA ─────────────────────────────────────────────────────────────
-function toggleUpdatePanel() {
-  document.getElementById('update-panel').classList.toggle('open');
-}
+// ─── UPDATE DATA ──────────────────────────────────────────────────────────────
+function toggleUpdatePanel() { document.getElementById('update-panel').classList.toggle('open'); }
 
-function normalize(s) {
-  return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-}
+function normalize(s) { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 
 function parseDate(str) {
-  if (!str || str === 'null' || str === '') return null;
-  // M/D/YYYY
-  const mdy4 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (mdy4) return `${mdy4[3]}-${mdy4[1].padStart(2,'0')}-${mdy4[2].padStart(2,'0')}`;
-  // M/D/YY (2-digit year — assume 2000s)
-  const mdy2 = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
-  if (mdy2) return `20${mdy2[3]}-${mdy2[1].padStart(2,'0')}-${mdy2[2].padStart(2,'0')}`;
-  // YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  if (!str||str==='null'||str==='') return null;
+  const mdy4=str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(mdy4) return `${mdy4[3]}-${mdy4[1].padStart(2,'0')}-${mdy4[2].padStart(2,'0')}`;
+  const mdy2=str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/); if(mdy2) return `20${mdy2[3]}-${mdy2[1].padStart(2,'0')}-${mdy2[2].padStart(2,'0')}`;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
   return null;
 }
 
 function processUpdate() {
   const raw = document.getElementById('update-paste').value.trim();
   if (!raw) { alert('Nothing to process — paste in your BigQuery export first.'); return; }
-
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length < 2) { alert('Not enough data rows.'); return; }
-
-  const headerCols = lines[0].split('\t').map(c => c.trim().toLowerCase());
+  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  if (lines.length<2) { alert('Not enough data rows.'); return; }
+  const headerCols = lines[0].split('\t').map(c=>c.trim().toLowerCase());
   const idx = {
-    ivr:        headerCols.findIndex(h => h === 'ivr_name' || h === 'ai_ivr' || h.includes('ivr_name')),
-    date:       headerCols.findIndex(h => h === 'call_date' || h === 'week_start'),
-    publisher:  headerCols.findIndex(h => h === 'publisher_name'),
-    advertiser: headerCols.findIndex(h => h === 'advertiser_name'),
-    raw_calls:  headerCols.findIndex(h => h === 'raw_calls' || h.includes('raw calls')),
-    paid_calls: headerCols.findIndex(h => h === 'paid_calls' || h.includes('paid calls')),
-    conversion: headerCols.findIndex(h => h === 'conversion' || h.includes('conversion')),
-    avg_dur:    headerCols.findIndex(h => h === 'avg_duration' || (h.includes('avg') && h.includes('dur'))),
-    revenue:    headerCols.findIndex(h => h === 'revenue' || h.includes('total revenue')),
-    margin:     headerCols.findIndex(h => h === 'margin' || h.includes('direct margin')),
+    ivr: headerCols.findIndex(h=>h==='ivr_name'||h==='ai_ivr'||h.includes('ivr_name')),
+    date: headerCols.findIndex(h=>h==='call_date'||h==='week_start'),
+    publisher: headerCols.findIndex(h=>h==='publisher_name'),
+    advertiser: headerCols.findIndex(h=>h==='advertiser_name'),
+    raw_calls: headerCols.findIndex(h=>h==='raw_calls'||h.includes('raw calls')),
+    paid_calls: headerCols.findIndex(h=>h==='paid_calls'||h.includes('paid calls')),
+    conversion: headerCols.findIndex(h=>h==='conversion'||h.includes('conversion')),
+    avg_dur: headerCols.findIndex(h=>h==='avg_duration'||(h.includes('avg')&&h.includes('dur'))),
+    revenue: headerCols.findIndex(h=>h==='revenue'||h.includes('total revenue')),
+    margin: headerCols.findIndex(h=>h==='margin'||h.includes('direct margin')),
   };
-
-  console.log('Headers:', headerCols, 'Indices:', idx);
-
-  if (idx.ivr === -1 || idx.revenue === -1 || idx.margin === -1) {
-    document.getElementById('update-results').innerHTML =
-      `<div style="color:var(--coral)">⚠ Could not detect required columns. Found: ${headerCols.join(', ')}</div>`;
+  if (idx.ivr===-1||idx.revenue===-1||idx.margin===-1) {
+    document.getElementById('update-results').innerHTML=`<div style="color:var(--coral)">⚠ Could not detect required columns. Found: ${headerCols.join(', ')}</div>`;
     return;
   }
-
-  const dataLines = lines.slice(1).filter(l => l.trim().length > 0);
-  const payload = [];
-  let updated = [], newAgents = [];
-
+  const dataLines = lines.slice(1).filter(l=>l.trim().length>0);
+  const payload=[]; let updated=[], newAgents=[];
   dataLines.forEach(line => {
-    const cols          = line.split('\t').map(c => c.trim());
-    const ivrName       = idx.ivr        >= 0 ? cols[idx.ivr]        : null;
-    const callDate      = idx.date       >= 0 ? parseDate(cols[idx.date]) : null;
-    const publisherName = idx.publisher  >= 0 ? (cols[idx.publisher]  || null) : null;
-    const advertiserName= idx.advertiser >= 0 ? (cols[idx.advertiser] || null) : null;
-    const raw_calls     = Math.round(parseFloat(cols[idx.raw_calls])  || 0);
-    const paid_calls    = Math.round(parseFloat(cols[idx.paid_calls]) || 0);
-    const conversion    = parseFloat(cols[idx.conversion]) || 0;
-    const avgVal        = idx.avg_dur >= 0 ? cols[idx.avg_dur] : null;
-    const avg_dur       = !avgVal || avgVal === 'null' || avgVal === '' ? null : parseFloat(avgVal) || null;
-    const revenue       = parseFloat(cols[idx.revenue]) || 0;
-    const margin        = parseFloat(cols[idx.margin])  || 0;
-
+    const cols=line.split('\t').map(c=>c.trim());
+    const ivrName=idx.ivr>=0?cols[idx.ivr]:null;
+    const callDate=idx.date>=0?parseDate(cols[idx.date]):null;
+    const publisherName=idx.publisher>=0?(cols[idx.publisher]||null):null;
+    const advertiserName=idx.advertiser>=0?(cols[idx.advertiser]||null):null;
+    const raw_calls=Math.round(parseFloat(cols[idx.raw_calls])||0);
+    const paid_calls=Math.round(parseFloat(cols[idx.paid_calls])||0);
+    const conversion=parseFloat(cols[idx.conversion])||0;
+    const avgVal=idx.avg_dur>=0?cols[idx.avg_dur]:null;
+    const avg_dur=!avgVal||avgVal==='null'||avgVal===''?null:parseFloat(avgVal)||null;
+    const revenue=parseFloat(cols[idx.revenue])||0;
+    const margin=parseFloat(cols[idx.margin])||0;
     if (!ivrName) return;
-    payload.push({ ivrName, callDate, publisherName, advertiserName, raw_calls, paid_calls, conversion, avg_dur, revenue, margin });
-
-    const match = AGENTS.find(a => normalize(a.ivrName) === normalize(ivrName));
+    payload.push({ivrName,callDate,publisherName,advertiserName,raw_calls,paid_calls,conversion,avg_dur,revenue,margin});
+    const match=AGENTS.find(a=>normalize(a.ivrName)===normalize(ivrName));
     if (match) {
-      if (!match._updated) {
-        match.raw_calls=0; match.paid_calls=0; match.revenue=0; match.margin=0;
-        match.conversion=0; match.avg_duration=null; match._updated=true;
-        match._pubMap={}; match._advMap={};
-      }
-      match.raw_calls  += raw_calls;
-      match.paid_calls += paid_calls;
-      match.revenue    += revenue;
-      match.margin     += margin;
-      match.avg_duration = avg_dur;
-
-      // Build pub/adv breakdowns for preview
-      if (publisherName) {
-        if (!match._pubMap[publisherName]) match._pubMap[publisherName] = { raw_calls:0, paid_calls:0, revenue:0 };
-        match._pubMap[publisherName].raw_calls  += raw_calls;
-        match._pubMap[publisherName].paid_calls += paid_calls;
-        match._pubMap[publisherName].revenue    += revenue;
-      }
-      if (advertiserName) {
-        if (!match._advMap[advertiserName]) match._advMap[advertiserName] = { raw_calls:0, paid_calls:0, revenue:0 };
-        match._advMap[advertiserName].raw_calls  += raw_calls;
-        match._advMap[advertiserName].paid_calls += paid_calls;
-        match._advMap[advertiserName].revenue    += revenue;
-      }
-
+      if (!match._updated) { match.raw_calls=0;match.paid_calls=0;match.revenue=0;match.margin=0;match.conversion=0;match.avg_duration=null;match._updated=true;match._pubMap={};match._advMap={}; }
+      match.raw_calls+=raw_calls; match.paid_calls+=paid_calls; match.revenue+=revenue; match.margin+=margin; match.avg_duration=avg_dur;
+      if (publisherName) { if(!match._pubMap[publisherName]) match._pubMap[publisherName]={raw_calls:0,paid_calls:0,revenue:0}; match._pubMap[publisherName].raw_calls+=raw_calls; match._pubMap[publisherName].paid_calls+=paid_calls; match._pubMap[publisherName].revenue+=revenue; }
+      if (advertiserName) { if(!match._advMap[advertiserName]) match._advMap[advertiserName]={raw_calls:0,paid_calls:0,revenue:0}; match._advMap[advertiserName].raw_calls+=raw_calls; match._advMap[advertiserName].paid_calls+=paid_calls; match._advMap[advertiserName].revenue+=revenue; }
       if (!updated.includes(match.ivrName)) updated.push(match.ivrName);
     } else {
-      if (!newAgents.find(n => n.ivrName === ivrName))
-        newAgents.push({ ivrName, raw_calls, paid_calls, conversion, avg_duration: avg_dur, revenue, margin });
+      if (!newAgents.find(n=>n.ivrName===ivrName)) newAgents.push({ivrName,raw_calls,paid_calls,conversion,avg_duration:avg_dur,revenue,margin});
     }
   });
-
-  // Finalize breakdowns and recalculate conversion from totals
   AGENTS.forEach(a => {
-    if (a._pubMap) {
-      a.pubBreakdown = Object.entries(a._pubMap).map(([name,d]) => ({name,...d})).sort((x,y)=>y.raw_calls-x.raw_calls).slice(0,10);
-      a.advBreakdown = Object.entries(a._advMap||{}).map(([name,d]) => ({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10);
-    }
-    // Recalculate conversion from aggregated totals
-    a.conversion = a.raw_calls > 0 ? a.paid_calls / a.raw_calls : 0;
+    if (a._pubMap) { a.pubBreakdown=Object.entries(a._pubMap).map(([name,d])=>({name,...d})).sort((x,y)=>y.raw_calls-x.raw_calls).slice(0,10); a.advBreakdown=Object.entries(a._advMap||{}).map(([name,d])=>({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10); }
+    a.conversion=a.raw_calls>0?a.paid_calls/a.raw_calls:0;
     delete a._updated; delete a._pubMap; delete a._advMap;
   });
-
-  const results = document.getElementById('update-results');
-  let html = '';
-  if (updated.length) html += `<div class="update-ok">✓ ${updated.length} agent${updated.length>1?'s':''} updated — saving to Supabase...</div>`;
-  if (newAgents.length) html += `<div class="update-new" style="margin-top:8px">⊕ ${newAgents.length} new agent${newAgents.length>1?'s':''} detected — complete intake below.</div>`;
-  if (!updated.length && !newAgents.length) html = '<div style="color:var(--text-3)">No matching agents found. Check column headers.</div>';
-  results.innerHTML = html;
-
+  const results=document.getElementById('update-results');
+  let html='';
+  if (updated.length) html+=`<div class="update-ok">✓ ${updated.length} agent${updated.length>1?'s':''} updated — saving to Supabase...</div>`;
+  if (newAgents.length) html+=`<div class="update-new" style="margin-top:8px">⊕ ${newAgents.length} new agent${newAgents.length>1?'s':''} detected — complete intake below.</div>`;
+  if (!updated.length&&!newAgents.length) html='<div style="color:var(--text-3)">No matching agents found. Check column headers.</div>';
+  results.innerHTML=html;
   if (updated.length) {
-    recomputeStats();
-    updateDataWindowLabels();
-    applyFilters();
-    saveToSupabase(payload).then(() => {
-      results.innerHTML = results.innerHTML.replace('saving to Supabase...', 'saved to Supabase ✓');
-    }).catch(e => {
-      results.innerHTML += `<div style="color:var(--coral);margin-top:6px">⚠ Supabase save failed: ${e.message}</div>`;
-    });
+    recomputeStats(); updateDataWindowLabels(); applyFilters();
+    saveToSupabase(payload).then(()=>{ results.innerHTML=results.innerHTML.replace('saving to Supabase...','saved to Supabase ✓'); }).catch(e=>{ results.innerHTML+=`<div style="color:var(--coral);margin-top:6px">⚠ Supabase save failed: ${e.message}</div>`; });
   }
-
-  newAgents.forEach((na, ni) => {
-    const div = document.createElement('div');
-    div.className = 'new-agent-intake';
-    div.innerHTML = `
-      <div class="intake-agent-name">New agent detected: <span>${na.ivrName}</span></div>
-      <div class="intake-field"><label class="intake-label">Vertical</label>
-        <select class="intake-select" id="intake-vertical-${ni}">
-          <option>Home Services</option><option>Insurance</option><option>Legal</option><option>Financial</option><option>Other</option>
-        </select></div>
-      <div class="intake-field"><label class="intake-label">Routing type</label>
-        <select class="intake-select" id="intake-routing-${ni}">
-          <option value="publisher-led">Publisher-led</option><option value="advertiser-led">Advertiser-led</option>
-          <option value="both">Both</option><option value="test-only">Internal / test</option>
-        </select></div>
-      <div class="intake-field"><label class="intake-label">Qualifying criteria (one per line)</label>
-        <textarea class="intake-textarea" id="intake-qual-${ni}"></textarea></div>
-      <div class="intake-field"><label class="intake-label">Publisher Campaign IVRs (campaign — publisher, one per line)</label>
-        <textarea class="intake-textarea" id="intake-pc-${ni}"></textarea></div>
-      <div class="intake-field"><label class="intake-label">IVR Targets After Listing Search (publisher | advertiser | vertical, one per line)</label>
-        <textarea class="intake-textarea" id="intake-ivr-${ni}"></textarea></div>
-      <div class="intake-field"><label class="intake-label">Notes (optional)</label>
-        <input class="intake-input" type="text" id="intake-notes-${ni}"></div>
-      <button class="intake-save-btn" onclick="saveNewAgent(${ni},'${na.ivrName.replace(/'/g,"\\'")}',${na.raw_calls},${na.paid_calls},${na.conversion},${na.avg_duration||'null'},${na.revenue},${na.margin})">Add to registry</button>
-    `;
+  newAgents.forEach((na,ni) => {
+    const div=document.createElement('div'); div.className='new-agent-intake';
+    div.innerHTML=`<div class="intake-agent-name">New agent detected: <span>${na.ivrName}</span></div><div class="intake-field"><label class="intake-label">Vertical</label><select class="intake-select" id="intake-vertical-${ni}"><option>Home Services</option><option>Insurance</option><option>Legal</option><option>Financial</option><option>Other</option></select></div><div class="intake-field"><label class="intake-label">Routing type</label><select class="intake-select" id="intake-routing-${ni}"><option value="publisher-led">Publisher-led</option><option value="advertiser-led">Advertiser-led</option><option value="both">Both</option><option value="test-only">Internal / test</option></select></div><div class="intake-field"><label class="intake-label">Qualifying criteria (one per line)</label><textarea class="intake-textarea" id="intake-qual-${ni}"></textarea></div><div class="intake-field"><label class="intake-label">Publisher Campaign IVRs (campaign — publisher, one per line)</label><textarea class="intake-textarea" id="intake-pc-${ni}"></textarea></div><div class="intake-field"><label class="intake-label">IVR Targets After Listing Search (publisher | advertiser | vertical, one per line)</label><textarea class="intake-textarea" id="intake-ivr-${ni}"></textarea></div><div class="intake-field"><label class="intake-label">Notes (optional)</label><input class="intake-input" type="text" id="intake-notes-${ni}"></div><button class="intake-save-btn" onclick="saveNewAgent(${ni},'${na.ivrName.replace(/'/g,"\\'")}',${na.raw_calls},${na.paid_calls},${na.conversion},${na.avg_duration||'null'},${na.revenue},${na.margin})">Add to registry</button>`;
     document.getElementById('new-agent-intakes').appendChild(div);
   });
 }
@@ -1693,642 +1180,227 @@ function processUpdate() {
 const SB_URL = CONFIG.supabaseUrl;
 const SB_KEY = CONFIG.supabaseKey;
 
-async function sbFetch(path, options = {}) {
+async function sbFetch(path, options={}) {
   const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
     ...options,
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'count=none',
-      ...(options.headers || {})
-    }
+    headers: { 'apikey':SB_KEY, 'Authorization':`Bearer ${SB_KEY}`, 'Content-Type':'application/json', 'Prefer':'count=none', ...(options.headers||{}) }
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Supabase error ${res.status}: ${err}`);
-  }
-  const text = await res.text();
+  if (!res.ok) { const err=await res.text(); throw new Error(`Supabase error ${res.status}: ${err}`); }
+  const text=await res.text();
   return text ? JSON.parse(text) : null;
 }
 
 async function loadFromSupabase() {
-  if (!activeRange.start || !activeRange.end) return;
-  const startISO = toISO(activeRange.start);
-  const endISO   = toISO(activeRange.end);
-
-  // Reset agent metrics and breakdown data
-  AGENTS.forEach(a => {
-    a.raw_calls=0; a.paid_calls=0; a.revenue=0; a.margin=0; a.conversion=0; a.avg_duration=null;
-    a._pubMap = {}; a._advMap = {};
-  });
-
+  if (!activeRange.start||!activeRange.end) return;
+  const startISO=toISO(activeRange.start), endISO=toISO(activeRange.end);
+  AGENTS.forEach(a => { a.raw_calls=0;a.paid_calls=0;a.revenue=0;a.margin=0;a.conversion=0;a.avg_duration=null;a._pubMap={};a._advMap={}; });
   try {
-    // Paginate through all rows in batches of 1000
-    const PAGE = 1000;
-    let allRows = [];
-    let offset = 0;
+    const PAGE=1000; let allRows=[], offset=0;
     while (true) {
-      const batch = await sbFetch(
-        `agent_metrics_v2?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date,publisher_name,advertiser_name` +
-        `&call_date=gte.${startISO}&call_date=lte.${endISO}` +
-        `&order=call_date.asc`,
-        { headers: { 'Range-Unit': 'items', 'Range': `${offset}-${offset + PAGE - 1}` } }
-      );
-      if (!batch || batch.length === 0) break;
-      allRows = allRows.concat(batch);
-      if (batch.length < PAGE) break; // last page
-      offset += PAGE;
+      const batch=await sbFetch(`agent_metrics_v2?select=ivr_name,raw_calls,paid_calls,conversion,avg_duration,revenue,margin,call_date,publisher_name,advertiser_name&call_date=gte.${startISO}&call_date=lte.${endISO}&order=call_date.asc`, {headers:{'Range-Unit':'items','Range':`${offset}-${offset+PAGE-1}`}});
+      if (!batch||batch.length===0) break;
+      allRows=allRows.concat(batch);
+      if (batch.length<PAGE) break;
+      offset+=PAGE;
     }
-
-    const latest = await sbFetch('agent_metrics_v2?select=call_date&order=call_date.desc&limit=1');
-
+    const latest=await sbFetch('agent_metrics_v2?select=call_date&order=call_date.desc&limit=1');
     if (allRows.length) {
       allRows.forEach(row => {
-        const match = AGENTS.find(a => normalize(a.ivrName) === normalize(row.ivr_name));
+        const match=AGENTS.find(a=>normalize(a.ivrName)===normalize(row.ivr_name));
         if (!match) return;
-
-        match.raw_calls  += row.raw_calls  || 0;
-        match.paid_calls += row.paid_calls || 0;
-        match.revenue    += row.revenue    || 0;
-        match.margin     += row.margin     || 0;
-        match.avg_duration = row.avg_duration || match.avg_duration;
-
-        const pub = row.publisher_name || '(unknown)';
-        if (!match._pubMap[pub]) match._pubMap[pub] = { raw_calls:0, paid_calls:0, revenue:0 };
-        match._pubMap[pub].raw_calls  += row.raw_calls  || 0;
-        match._pubMap[pub].paid_calls += row.paid_calls || 0;
-        match._pubMap[pub].revenue    += row.revenue    || 0;
-
-        const adv = row.advertiser_name || '(unknown)';
-        if (!match._advMap[adv]) match._advMap[adv] = { raw_calls:0, paid_calls:0, revenue:0 };
-        match._advMap[adv].raw_calls  += row.raw_calls  || 0;
-        match._advMap[adv].paid_calls += row.paid_calls || 0;
-        match._advMap[adv].revenue    += row.revenue    || 0;
+        match.raw_calls+=row.raw_calls||0; match.paid_calls+=row.paid_calls||0; match.revenue+=row.revenue||0; match.margin+=row.margin||0; match.avg_duration=row.avg_duration||match.avg_duration;
+        const pub=row.publisher_name||'(unknown)'; if(!match._pubMap[pub]) match._pubMap[pub]={raw_calls:0,paid_calls:0,revenue:0}; match._pubMap[pub].raw_calls+=row.raw_calls||0; match._pubMap[pub].paid_calls+=row.paid_calls||0; match._pubMap[pub].revenue+=row.revenue||0;
+        const adv=row.advertiser_name||'(unknown)'; if(!match._advMap[adv]) match._advMap[adv]={raw_calls:0,paid_calls:0,revenue:0}; match._advMap[adv].raw_calls+=row.raw_calls||0; match._advMap[adv].paid_calls+=row.paid_calls||0; match._advMap[adv].revenue+=row.revenue||0;
       });
-
       AGENTS.forEach(a => {
-        a.pubBreakdown = Object.entries(a._pubMap)
-          .map(([name, d]) => ({ name, ...d }))
-          .sort((x,y) => y.raw_calls - x.raw_calls)
-          .slice(0, 10);
-        a.advBreakdown = Object.entries(a._advMap)
-          .map(([name, d]) => ({ name, ...d }))
-          .sort((x,y) => y.revenue - x.revenue)
-          .slice(0, 10);
-        // Recalculate conversion from aggregated totals
-        a.conversion = a.raw_calls > 0 ? a.paid_calls / a.raw_calls : 0;
+        a.pubBreakdown=Object.entries(a._pubMap).map(([name,d])=>({name,...d})).sort((x,y)=>y.raw_calls-x.raw_calls).slice(0,10);
+        a.advBreakdown=Object.entries(a._advMap).map(([name,d])=>({name,...d})).sort((x,y)=>y.revenue-x.revenue).slice(0,10);
+        a.conversion=a.raw_calls>0?a.paid_calls/a.raw_calls:0;
         delete a._pubMap; delete a._advMap;
       });
     }
-
-    if (latest && latest.length && latest[0].call_date) {
-      const d = new Date(latest[0].call_date + 'T00:00:00');
-      document.getElementById('freshness-label').textContent = 'Data current through ' + fmtDate(d);
-    } else {
-      document.getElementById('freshness-label').textContent = 'No data loaded yet';
-    }
-
+    if (latest&&latest.length&&latest[0].call_date) { const d=new Date(latest[0].call_date+'T00:00:00'); document.getElementById('freshness-label').textContent='Data current through '+fmtDate(d); }
+    else document.getElementById('freshness-label').textContent='No data loaded yet';
   } catch(e) {
-    console.warn('Supabase load failed:', e.message);
-    document.getElementById('freshness-label').textContent = 'Could not load data';
+    console.warn('Supabase load failed:',e.message);
+    document.getElementById('freshness-label').textContent='Could not load data';
   }
-
-  recomputeStats();
-  updateDataWindowLabels();
-  applyFilters();
+  recomputeStats(); updateDataWindowLabels(); applyFilters();
 }
 
 async function saveToSupabase(rows) {
-  const payload = rows
-    .filter(r => r.callDate)
-    .map(r => ({
-      ivr_name:        r.ivrName,
-      call_date:       r.callDate,
-      publisher_name:  r.publisherName  || null,
-      advertiser_name: r.advertiserName || null,
-      raw_calls:       Math.round(r.raw_calls  || 0),
-      paid_calls:      Math.round(r.paid_calls || 0),
-      conversion:      parseFloat((r.conversion || 0).toFixed(8)),
-      avg_duration:    r.avg_dur != null ? parseFloat(r.avg_dur.toFixed(4)) : null,
-      revenue:         parseFloat((r.revenue || 0).toFixed(4)),
-      margin:          parseFloat((r.margin  || 0).toFixed(4))
-    }));
-
+  const payload=rows.filter(r=>r.callDate).map(r=>({ivr_name:r.ivrName,call_date:r.callDate,publisher_name:r.publisherName||null,advertiser_name:r.advertiserName||null,raw_calls:Math.round(r.raw_calls||0),paid_calls:Math.round(r.paid_calls||0),conversion:parseFloat((r.conversion||0).toFixed(8)),avg_duration:r.avg_dur!=null?parseFloat(r.avg_dur.toFixed(4)):null,revenue:parseFloat((r.revenue||0).toFixed(4)),margin:parseFloat((r.margin||0).toFixed(4))}));
   if (!payload.length) throw new Error('No valid dates in export — check call_date column.');
-
-  const CHUNK = 500;
-  for (let i = 0; i < payload.length; i += CHUNK) {
-    const batch = payload.slice(i, i + CHUNK);
-    await sbFetch('agent_metrics_v2?on_conflict=ivr_name,call_date,publisher_name,advertiser_name', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates' },
-      body: JSON.stringify(batch)
-    });
+  const CHUNK=500;
+  for (let i=0;i<payload.length;i+=CHUNK) {
+    await sbFetch('agent_metrics_v2?on_conflict=ivr_name,call_date,publisher_name,advertiser_name', {method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(payload.slice(i,i+CHUNK))});
   }
 }
 
 // ─── CHATBOT ──────────────────────────────────────────────────────────────────
-function toggleChat() {
-  const panel = document.getElementById('chat-panel');
-  panel.classList.toggle('hidden');
-  if (!panel.classList.contains('hidden')) {
-    document.getElementById('chat-input').focus();
-  }
-}
-
-function chatKeydown(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-}
-
-function sendExample(btn) {
-  document.getElementById('chat-input').value = btn.textContent;
-  document.getElementById('chat-examples').style.display = 'none';
-  sendChat();
-}
+function toggleChat() { const p=document.getElementById('chat-panel'); p.classList.toggle('hidden'); if(!p.classList.contains('hidden')) document.getElementById('chat-input').focus(); }
+function chatKeydown(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();} }
+function sendExample(btn) { document.getElementById('chat-input').value=btn.textContent; document.getElementById('chat-examples').style.display='none'; sendChat(); }
 
 function buildDataSummary() {
-  const window = activeRange.label;
-  const agentSummaries = AGENTS.map(a => {
-    const pubList = (a.pubBreakdown||[]).slice(0,5).map(p => `${p.name} (${p.raw_calls} raw, ${p.paid_calls} paid, $${Math.round(p.revenue)})`).join('; ');
-    const advList = (a.advBreakdown||[]).slice(0,5).map(d => `${d.name} (${d.raw_calls} raw, ${d.paid_calls} paid, $${Math.round(d.revenue)})`).join('; ');
-    return `Agent: ${a.ivrName}
-  Vertical: ${a.vertical} | Status: ${getEffectiveStatus(a)} | Routing: ${a.routingType}
-  Metrics (${window}): ${a.raw_calls} raw calls, ${Math.round(a.paid_calls)} paid, ${a.conversion>0?(a.conversion*100).toFixed(1)+'%':' 0%'} conversion, $${Math.round(a.revenue)} revenue, $${Math.round(a.margin)} margin
-  Top publishers: ${pubList || 'none'}
-  Top advertisers: ${advList || 'none'}`;
+  const w=activeRange.label;
+  const agentSummaries=AGENTS.map(a=>{
+    const pubList=(a.pubBreakdown||[]).slice(0,5).map(p=>`${p.name} (${p.raw_calls} raw, ${p.paid_calls} paid, $${Math.round(p.revenue)})`).join('; ');
+    const advList=(a.advBreakdown||[]).slice(0,5).map(d=>`${d.name} (${d.raw_calls} raw, ${d.paid_calls} paid, $${Math.round(d.revenue)})`).join('; ');
+    return `Agent: ${a.ivrName}\n  Vertical: ${a.vertical} | Status: ${getEffectiveStatus(a)} | Routing: ${a.routingType}\n  Metrics (${w}): ${a.raw_calls} raw calls, ${Math.round(a.paid_calls)} paid, ${a.conversion>0?(a.conversion*100).toFixed(1)+'%':' 0%'} conversion, $${Math.round(a.revenue)} revenue, $${Math.round(a.margin)} margin\n  Top publishers: ${pubList||'none'}\n  Top advertisers: ${advList||'none'}`;
   }).join('\n\n');
-
-  return `You are a data analyst assistant for Buyerlink Calls, a call marketplace. You have access to AI IVR agent performance data for the period: ${window}.
-
-Here is the complete data for all ${AGENTS.length} agents:
-
-${agentSummaries}
-
-Answer questions concisely and accurately based only on this data. If something isn't in the data, say so.`;
+  return `You are a data analyst assistant for Buyerlink Calls, a call marketplace. You have access to AI IVR agent performance data for the period: ${w}.\n\nHere is the complete data for all ${AGENTS.length} agents:\n\n${agentSummaries}\n\nAnswer questions concisely and accurately based only on this data. If something isn't in the data, say so.`;
 }
 
 async function sendChat() {
-  const input = document.getElementById('chat-input');
-  const question = input.value.trim();
+  const input=document.getElementById('chat-input');
+  const question=input.value.trim();
   if (!question) return;
-
-  const messages = document.getElementById('chat-messages');
-  const sendBtn = document.getElementById('chat-send');
-
-  // Hide example prompts after first message
-  document.getElementById('chat-examples').style.display = 'none';
-
-  // Add user message
-  messages.innerHTML += `<div class="chat-msg user">${question}</div>`;
-  messages.innerHTML += `<div class="chat-msg thinking" id="chat-thinking">Thinking...</div>`;
-  input.value = '';
-  sendBtn.disabled = true;
-  messages.scrollTop = messages.scrollHeight;
-
+  const messages=document.getElementById('chat-messages'), sendBtn=document.getElementById('chat-send');
+  document.getElementById('chat-examples').style.display='none';
+  messages.innerHTML+=`<div class="chat-msg user">${question}</div><div class="chat-msg thinking" id="chat-thinking">Thinking...</div>`;
+  input.value=''; sendBtn.disabled=true; messages.scrollTop=messages.scrollHeight;
   try {
-    const systemPrompt = buildDataSummary();
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: question }]
-      })
-    });
-
-    const data = await response.json();
-    const answer = data.content?.[0]?.text || 'Sorry, I could not get a response.';
-
+    const data=await(await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildDataSummary(),messages:[{role:'user',content:question}]})})).json();
+    const answer=data.content?.[0]?.text||'Sorry, I could not get a response.';
     document.getElementById('chat-thinking').remove();
-    messages.innerHTML += `<div class="chat-msg assistant">${answer.replace(/\n/g,'<br>')}</div>`;
+    messages.innerHTML+=`<div class="chat-msg assistant">${answer.replace(/\n/g,'<br>')}</div>`;
   } catch(e) {
     document.getElementById('chat-thinking').remove();
-    messages.innerHTML += `<div class="chat-msg assistant">Sorry, something went wrong: ${e.message}</div>`;
+    messages.innerHTML+=`<div class="chat-msg assistant">Sorry, something went wrong: ${e.message}</div>`;
   }
-
-  sendBtn.disabled = false;
-  messages.scrollTop = messages.scrollHeight;
+  sendBtn.disabled=false; messages.scrollTop=messages.scrollHeight;
 }
 
-// ─── IN DEVELOPMENT ──────────────────────────────────────────────────────────
-let devCurrentIvr = null;   // the full row object for the open detail modal
-let devDeleteTarget = null;
-let devSignoffState = { supply: 'pending', demand: 'pending' };
+// ─── IN DEVELOPMENT ───────────────────────────────────────────────────────────
+let devCurrentIvr=null, devDeleteTarget=null, devSignoffState={supply:'pending',demand:'pending'};
 
-
-
-// ── Supabase helpers ──────────────────────────────────────────────────────────
-async function devSbFetch(path, opts = {}) {
-  const res = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${path}`, {
-    ...opts,
-    headers: {
-      'apikey': CONFIG.supabaseKey,
-      'Authorization': `Bearer ${CONFIG.supabaseKey}`,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer || 'return=representation',
-      ...(opts.headers || {})
-    }
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Supabase error: ${err}`);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+async function devSbFetch(path, opts={}) {
+  const res=await fetch(`${CONFIG.supabaseUrl}/rest/v1/${path}`,{...opts,headers:{'apikey':CONFIG.supabaseKey,'Authorization':`Bearer ${CONFIG.supabaseKey}`,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...(opts.headers||{})}});
+  if (!res.ok){const err=await res.text();throw new Error(`Supabase error: ${err}`);}
+  const text=await res.text(); return text?JSON.parse(text):null;
 }
 
-// ── Modal open / close ────────────────────────────────────────────────────────
-function devOpenModal(id) {
-  document.getElementById(id).style.display = 'flex';
-}
-function devCloseModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
+function devOpenModal(id){document.getElementById(id).style.display='flex';}
+function devCloseModal(id){document.getElementById(id).style.display='none';}
 
-// Close on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.dev-modal-backdrop').forEach(b => {
-    b.addEventListener('click', e => { if (e.target === b) b.style.display = 'none'; });
-  });
-  document.querySelectorAll('.dev-signoff-textarea').forEach(t => {
-    t.addEventListener('input', () => t.classList.remove('dev-note-required'));
-  });
+  document.querySelectorAll('.dev-modal-backdrop').forEach(b=>{b.addEventListener('click',e=>{if(e.target===b)b.style.display='none';});});
+  document.querySelectorAll('.dev-signoff-textarea').forEach(t=>{t.addEventListener('input',()=>t.classList.remove('dev-note-required'));});
   devLoadIvrs();
 });
 
-// ── Dot menu ─────────────────────────────────────────────────────────────────
-function devToggleMenu(id, e) {
-  e.stopPropagation();
-  const menu = document.getElementById(id);
-  const isOpen = menu.classList.contains('open');
-  document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
-  if (!isOpen) menu.classList.add('open');
-}
-document.addEventListener('click', () => {
-  document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
-});
+function devToggleMenu(id,e){e.stopPropagation();const menu=document.getElementById(id);const isOpen=menu.classList.contains('open');document.querySelectorAll('.dev-dropdown').forEach(d=>d.classList.remove('open'));if(!isOpen)menu.classList.add('open');}
+document.addEventListener('click',()=>{document.querySelectorAll('.dev-dropdown').forEach(d=>d.classList.remove('open'));});
 
-// ── Form helpers ──────────────────────────────────────────────────────────────
-function devShowLed(v) {
-  document.getElementById('dev-cond-adv').className = 'dev-cond-section' + (v === 'advertiser' || v === 'both' ? ' visible' : '');
-  document.getElementById('dev-cond-pub').className = 'dev-cond-section' + (v === 'publisher' || v === 'both' ? ' visible' : '');
-}
-function devToggleRepingFields() {
-  const val = document.getElementById('dev-f-ondq').value;
-  document.getElementById('dev-reping-fields').className = 'dev-reping-fields' + (val === 'reping' ? ' visible' : '');
-}
-function devGetLed() {
-  const sel = document.querySelector('input[name="dev-led"]:checked');
-  return sel ? sel.value : '';
+function devShowLed(v){document.getElementById('dev-cond-adv').className='dev-cond-section'+(v==='advertiser'||v==='both'?' visible':'');document.getElementById('dev-cond-pub').className='dev-cond-section'+(v==='publisher'||v==='both'?' visible':'');}
+function devToggleRepingFields(){const val=document.getElementById('dev-f-ondq').value;document.getElementById('dev-reping-fields').className='dev-reping-fields'+(val==='reping'?' visible':'');}
+function devGetLed(){const sel=document.querySelector('input[name="dev-led"]:checked');return sel?sel.value:'';}
+
+async function devLoadIvrs(){
+  try{const rows=await devSbFetch('ivr_development?order=created_at.desc&select=*');const list=document.getElementById('dev-ivr-list');list.innerHTML='';if(!rows||rows.length===0){list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text-3);font-size:14px;">No IVRs in development yet. Click "+ Build new AI IVR" to get started.</div>';return;}rows.forEach(row=>list.appendChild(devBuildCard(row)));}catch(e){document.getElementById('dev-ivr-list').innerHTML=`<div style="padding:20px;color:#A32D2D;font-size:13px;">Could not load IVRs: ${e.message}</div>`;}
 }
 
-// ── Load & render IVR list ────────────────────────────────────────────────────
-async function devLoadIvrs() {
-  const empty = document.getElementById('dev-empty-state');
-  try {
-    const rows = await devSbFetch('ivr_development?order=created_at.desc&select=*');
-    const list = document.getElementById('dev-ivr-list');
-    list.innerHTML = '';
-    if (!rows || rows.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-3);font-size:14px;">No IVRs in development yet. Click "+ Build new AI IVR" to get started.</div>';
-      return;
-    }
-    rows.forEach(row => list.appendChild(devBuildCard(row)));
-  } catch(e) {
-    document.getElementById('dev-ivr-list').innerHTML = `<div style="padding:20px;color:#A32D2D;font-size:13px;">Could not load IVRs: ${e.message}</div>`;
-  }
-}
-
-function devBuildCard(row) {
-  const c = document.createElement('div');
-  c.className = 'dev-ivr-card';
-  c.id = 'dev-card-' + row.id;
-  const badgeClass = { draft:'dev-badge-draft', review:'dev-badge-review', approved:'dev-badge-approved', live:'dev-badge-live' }[row.status] || 'dev-badge-draft';
-  const badgeLabel = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' }[row.status] || 'Draft';
-  const date = row.created_at ? new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-  const meta = [row.vertical, row.led_by ? (row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led') : '', date ? 'Started '+date : ''].filter(Boolean).join(' · ');
-  const menuId = 'dev-menu-' + row.id;
-  c.innerHTML = `
-    <div class="dev-card-menu-col">
-      <button class="dev-dots-btn" onclick="devToggleMenu('${menuId}',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button>
-      <div class="dev-dropdown" id="${menuId}">
-        <button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('${row.id}','${row.name.replace(/'/g,"\\'")}')">Delete</button>
-      </div>
-    </div>
-    <div class="dev-card-body" onclick="devOpenDetail('${row.id}')">
-      <div class="dev-card-name">${row.name}</div>
-      <div class="dev-card-meta">${meta}</div>
-    </div>
-    <div class="dev-card-right">
-      <span class="dev-badge ${badgeClass}">${badgeLabel}</span>
-      <span class="dev-card-chevron">›</span>
-    </div>`;
+function devBuildCard(row){
+  const c=document.createElement('div');c.className='dev-ivr-card';c.id='dev-card-'+row.id;
+  const badgeClass={draft:'dev-badge-draft',review:'dev-badge-review',approved:'dev-badge-approved',live:'dev-badge-live'}[row.status]||'dev-badge-draft';
+  const badgeLabel={draft:'Draft',review:'In review',approved:'Approved',live:'Live'}[row.status]||'Draft';
+  const date=row.created_at?new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  const meta=[row.vertical,row.led_by?(row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led'):'',date?'Started '+date:''].filter(Boolean).join(' · ');
+  const menuId='dev-menu-'+row.id;
+  c.innerHTML=`<div class="dev-card-menu-col"><button class="dev-dots-btn" onclick="devToggleMenu('${menuId}',event)"><div class="dev-dot"></div><div class="dev-dot"></div><div class="dev-dot"></div></button><div class="dev-dropdown" id="${menuId}"><button class="dev-dropdown-item dev-danger" onclick="devConfirmDelete('${row.id}','${row.name.replace(/'/g,"\\'")}')">Delete</button></div></div><div class="dev-card-body" onclick="devOpenDetail('${row.id}')"><div class="dev-card-name">${row.name}</div><div class="dev-card-meta">${meta}</div></div><div class="dev-card-right"><span class="dev-badge ${badgeClass}">${badgeLabel}</span><span class="dev-card-chevron">›</span></div>`;
   return c;
 }
 
-// ── Save new IVR ──────────────────────────────────────────────────────────────
-async function devSubmitNew() {
-  const name = document.getElementById('dev-f-name').value.trim();
-  if (!name) { document.getElementById('dev-f-name').focus(); return; }
-
-  const btn = document.getElementById('dev-save-btn');
-  btn.disabled = true; btn.textContent = 'Saving…';
-
-  const payload = {
-    name,
-    vertical:          document.getElementById('dev-f-vertical').value.trim() || null,
-    qualifying_for:    document.getElementById('dev-f-qualifying').value.trim() || null,
-    led_by:            devGetLed() || null,
-    advertisers:       document.getElementById('dev-f-advertisers')?.value.trim() || null,
-    publishers:        document.getElementById('dev-f-publishers')?.value.trim() || null,
-    hard_dq:           document.getElementById('dev-f-harddq').value.trim() || null,
-    data_collected:    document.getElementById('dev-f-datacollected').value.trim() || null,
-    expected_duration: document.getElementById('dev-f-duration').value.trim() || null,
-    on_dq:             document.getElementById('dev-f-ondq').value || null,
-    reping_logic:      document.getElementById('dev-f-repinglogic')?.value.trim() || null,
-    notes:             document.getElementById('dev-f-notes').value.trim() || null,
-    status:            'draft'
-  };
-
-  try {
-    const rows = await devSbFetch('ivr_development', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    devCloseModal('dev-modal-new');
-    devResetNewForm();
-    await devLoadIvrs();
-  } catch(e) {
-    alert('Could not save: ' + e.message);
-  }
-
-  btn.disabled = false; btn.textContent = 'Save';
+async function devSubmitNew(){
+  const name=document.getElementById('dev-f-name').value.trim();
+  if(!name){document.getElementById('dev-f-name').focus();return;}
+  const btn=document.getElementById('dev-save-btn');btn.disabled=true;btn.textContent='Saving…';
+  const payload={name,vertical:document.getElementById('dev-f-vertical').value.trim()||null,qualifying_for:document.getElementById('dev-f-qualifying').value.trim()||null,led_by:devGetLed()||null,advertisers:document.getElementById('dev-f-advertisers')?.value.trim()||null,publishers:document.getElementById('dev-f-publishers')?.value.trim()||null,hard_dq:document.getElementById('dev-f-harddq').value.trim()||null,data_collected:document.getElementById('dev-f-datacollected').value.trim()||null,expected_duration:document.getElementById('dev-f-duration').value.trim()||null,on_dq:document.getElementById('dev-f-ondq').value||null,reping_logic:document.getElementById('dev-f-repinglogic')?.value.trim()||null,notes:document.getElementById('dev-f-notes').value.trim()||null,status:'draft'};
+  try{await devSbFetch('ivr_development',{method:'POST',body:JSON.stringify(payload)});devCloseModal('dev-modal-new');devResetNewForm();await devLoadIvrs();}catch(e){alert('Could not save: '+e.message);}
+  btn.disabled=false;btn.textContent='Save';
 }
 
-function devResetNewForm() {
-  ['dev-f-name','dev-f-vertical','dev-f-qualifying','dev-f-advertisers','dev-f-publishers',
-   'dev-f-harddq','dev-f-datacollected','dev-f-duration','dev-f-notes','dev-f-repinglogic'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
+function devResetNewForm(){
+  ['dev-f-name','dev-f-vertical','dev-f-qualifying','dev-f-advertisers','dev-f-publishers','dev-f-harddq','dev-f-datacollected','dev-f-duration','dev-f-notes','dev-f-repinglogic'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('dev-f-ondq').value='';
+  document.querySelectorAll('input[name="dev-led"]').forEach(r=>r.checked=false);
+  document.getElementById('dev-cond-adv').className='dev-cond-section';
+  document.getElementById('dev-cond-pub').className='dev-cond-section';
+  document.getElementById('dev-reping-fields').className='dev-reping-fields';
+}
+
+async function devOpenDetail(ivrId,alreadyOpen){
+  try{const rows=await devSbFetch(`ivr_development?id=eq.${ivrId}&select=*`);if(!rows||!rows.length)return;devCurrentIvr=rows[0];const signoffs=await devSbFetch(`ivr_signoffs?ivr_id=eq.${ivrId}&select=*`);const recordings=await devSbFetch(`ivr_recordings?ivr_id=eq.${ivrId}&order=uploaded_at.desc&select=*`);devPopulateDetail(devCurrentIvr,signoffs||[],recordings||[]);if(!alreadyOpen)devOpenModal('dev-modal-detail');}catch(e){alert('Could not load IVR: '+e.message);}
+}
+
+function devPopulateDetail(row,signoffs,recordings){
+  const statusLabels={draft:'Draft',review:'In review',approved:'Approved',live:'Live'};
+  const badgeClasses={draft:'dev-badge-draft',review:'dev-badge-review',approved:'dev-badge-approved',live:'dev-badge-live'};
+  document.getElementById('dev-detail-title').textContent=row.name;
+  const badge=document.getElementById('dev-detail-badge');badge.textContent=statusLabels[row.status]||'Draft';badge.className='dev-badge '+(badgeClasses[row.status]||'dev-badge-draft');
+  const date=row.created_at?new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  document.getElementById('dev-detail-meta').textContent=[row.vertical,row.led_by?(row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led'):'',date?'Started '+date:''].filter(Boolean).join(' · ');
+  const steps=['draft','review','approved','live'];const labels={draft:'Draft',review:'In review',approved:'Approved',live:'Live'};const cur=steps.indexOf(row.status);
+  document.getElementById('dev-detail-rail').innerHTML=steps.map((s,i)=>{const cls=i<cur?'dev-status-step dev-done':i===cur?'dev-status-step dev-active':'dev-status-step';return(i>0?'<div class="dev-status-line"></div>':'')+`<div class="${cls}"><div class="dev-status-dot"></div>${labels[s]}</div>`;}).join('');
+  const summaryFields=[{key:'Qualifying for',val:row.qualifying_for},{key:'Expected call duration',val:row.expected_duration},{key:'Hard disqualification',val:row.hard_dq},{key:'Data passed on qualified call',val:row.data_collected},{key:'On disqualification',val:row.on_dq},{key:'Repinging',val:row.reping_logic},{key:'Advertisers',val:row.advertisers},{key:'Publishers',val:row.publishers},{key:'Notes',val:row.notes}].filter(f=>f.val);
+  document.getElementById('dev-detail-summary').innerHTML=summaryFields.map(f=>`<div class="dev-summary-item"><div class="dev-summary-key">${f.key}</div><div class="dev-summary-val">${f.val}</div></div>`).join('')||'<div style="font-size:13px;color:var(--text-3);font-style:italic">No requirements entered yet.</div>';
+  const recList=document.getElementById('dev-detail-recordings');
+  const linkIcon=`<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5l-1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+  recList.innerHTML=recordings.length?recordings.map(r=>`<div class="dev-upload-item"><div class="dev-upload-item-left"><div class="dev-upload-icon">${linkIcon}</div><div class="dev-upload-info"><div class="dev-upload-name">${r.filename}</div><a class="dev-upload-url" href="${r.filesize||'#'}" target="_blank" rel="noopener">${r.filesize||'No URL'}</a></div></div><a class="dev-btn-open" href="${r.filesize||'#'}" target="_blank" rel="noopener">Open ↗</a></div>`).join(''):'';
+  document.getElementById('dev-link-label').value='';document.getElementById('dev-link-url').value='';
+  devSignoffState={supply:'pending',demand:'pending'};signoffs.forEach(s=>{devSignoffState[s.team]=s.decision;});
+  ['supply','demand'].forEach(team=>{
+    const sig=signoffs.find(s=>s.team===team);const badge=document.getElementById('dev-badge-'+team);const block=document.getElementById('dev-sb-'+team);const noteEl=document.getElementById('dev-note-'+team);const btnA=document.getElementById('dev-btn-app-'+team);const btnR=document.getElementById('dev-btn-rej-'+team);
+    block.className='dev-signoff-block';noteEl.value='';noteEl.disabled=false;btnA.disabled=false;btnR.disabled=false;
+    if(sig){noteEl.value=sig.note||'';noteEl.disabled=true;btnA.disabled=true;btnR.disabled=true;if(sig.decision==='approve'){badge.className='dev-sig-badge dev-sig-approved';badge.textContent='Approved';block.className='dev-signoff-block approved';}else{badge.className='dev-sig-badge dev-sig-rejected';badge.textContent='Changes requested';block.className='dev-signoff-block rejected';}}else{badge.className='dev-sig-badge dev-sig-pending';badge.textContent='Pending';}
   });
-  document.getElementById('dev-f-ondq').value = '';
-  document.querySelectorAll('input[name="dev-led"]').forEach(r => r.checked = false);
-  document.getElementById('dev-cond-adv').className = 'dev-cond-section';
-  document.getElementById('dev-cond-pub').className = 'dev-cond-section';
-  document.getElementById('dev-reping-fields').className = 'dev-reping-fields';
-}
-
-// ── Open detail modal ─────────────────────────────────────────────────────────
-async function devOpenDetail(ivrId, alreadyOpen) {
-  try {
-    const rows = await devSbFetch(`ivr_development?id=eq.${ivrId}&select=*`);
-    if (!rows || !rows.length) return;
-    devCurrentIvr = rows[0];
-
-    const signoffs   = await devSbFetch(`ivr_signoffs?ivr_id=eq.${ivrId}&select=*`);
-    const recordings = await devSbFetch(`ivr_recordings?ivr_id=eq.${ivrId}&order=uploaded_at.desc&select=*`);
-
-    devPopulateDetail(devCurrentIvr, signoffs || [], recordings || []);
-    if (!alreadyOpen) devOpenModal('dev-modal-detail');
-  } catch(e) {
-    alert('Could not load IVR: ' + e.message);
-  }
-}
-
-function devPopulateDetail(row, signoffs, recordings) {
-  const statusLabels = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' };
-  const badgeClasses = { draft:'dev-badge-draft', review:'dev-badge-review', approved:'dev-badge-approved', live:'dev-badge-live' };
-
-  document.getElementById('dev-detail-title').textContent = row.name;
-  const badge = document.getElementById('dev-detail-badge');
-  badge.textContent = statusLabels[row.status] || 'Draft';
-  badge.className = 'dev-badge ' + (badgeClasses[row.status] || 'dev-badge-draft');
-
-  const date = row.created_at ? new Date(row.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-  const meta = [row.vertical, row.led_by ? (row.led_by.charAt(0).toUpperCase()+row.led_by.slice(1)+'-led') : '', date ? 'Started '+date : ''].filter(Boolean).join(' · ');
-  document.getElementById('dev-detail-meta').textContent = meta;
-
-  // Status rail
-  const steps = ['draft','review','approved','live'];
-  const labels = { draft:'Draft', review:'In review', approved:'Approved', live:'Live' };
-  const cur = steps.indexOf(row.status);
-  const rail = document.getElementById('dev-detail-rail');
-  rail.innerHTML = steps.map((s, i) => {
-    const cls = i < cur ? 'dev-status-step dev-done' : i === cur ? 'dev-status-step dev-active' : 'dev-status-step';
-    return (i > 0 ? '<div class="dev-status-line"></div>' : '') +
-      `<div class="${cls}"><div class="dev-status-dot"></div>${labels[s]}</div>`;
-  }).join('');
-
-  // Summary grid
-  const summaryFields = [
-    { key: 'Qualifying for',              val: row.qualifying_for },
-    { key: 'Expected call duration',      val: row.expected_duration },
-    { key: 'Hard disqualification',       val: row.hard_dq },
-    { key: 'Data passed on qualified call', val: row.data_collected },
-    { key: 'On disqualification',         val: row.on_dq },
-    { key: 'Repinging',                   val: row.reping_logic },
-    { key: 'Advertisers',                 val: row.advertisers },
-    { key: 'Publishers',                  val: row.publishers },
-    { key: 'Notes',                       val: row.notes }
-  ].filter(f => f.val);
-  document.getElementById('dev-detail-summary').innerHTML = summaryFields.map(f =>
-    `<div class="dev-summary-item"><div class="dev-summary-key">${f.key}</div><div class="dev-summary-val">${f.val}</div></div>`
-  ).join('') || '<div style="font-size:13px;color:var(--text-3);font-style:italic">No requirements entered yet.</div>';
-
-  // Recordings
-  const recList = document.getElementById('dev-detail-recordings');
-  const linkIcon = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M6.5 9.5a3.5 3.5 0 0 0 5 0l2-2a3.5 3.5 0 0 0-5-5l-1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M9.5 6.5a3.5 3.5 0 0 0-5 0l-2 2a3.5 3.5 0 0 0 5 5l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>`;
-  recList.innerHTML = recordings.length ? recordings.map(r =>
-    `<div class="dev-upload-item">
-      <div class="dev-upload-item-left">
-        <div class="dev-upload-icon">${linkIcon}</div>
-        <div class="dev-upload-info">
-          <div class="dev-upload-name">${r.filename}</div>
-          <a class="dev-upload-url" href="${r.filesize || '#'}" target="_blank" rel="noopener">${r.filesize || 'No URL'}</a>
-        </div>
-      </div>
-      <a class="dev-btn-open" href="${r.filesize || '#'}" target="_blank" rel="noopener">Open ↗</a>
-    </div>`
-  ).join('') : '';
-
-  // Clear add-link inputs and wire up the row
-  document.getElementById('dev-link-label').value = '';
-  document.getElementById('dev-link-url').value = '';
-
-  // Sign-offs
-  devSignoffState = { supply: 'pending', demand: 'pending' };
-  signoffs.forEach(s => { devSignoffState[s.team] = s.decision; });
-
-  ['supply','demand'].forEach(team => {
-    const sig = signoffs.find(s => s.team === team);
-    const badge = document.getElementById('dev-badge-' + team);
-    const block = document.getElementById('dev-sb-' + team);
-    const noteEl = document.getElementById('dev-note-' + team);
-    const btnA = document.getElementById('dev-btn-app-' + team);
-    const btnR = document.getElementById('dev-btn-rej-' + team);
-
-    // Reset
-    block.className = 'dev-signoff-block';
-    noteEl.value = '';
-    noteEl.disabled = false;
-    btnA.disabled = false; btnR.disabled = false;
-
-    if (sig) {
-      noteEl.value = sig.note || '';
-      noteEl.disabled = true;
-      btnA.disabled = true; btnR.disabled = true;
-      if (sig.decision === 'approve') {
-        badge.className = 'dev-sig-badge dev-sig-approved'; badge.textContent = 'Approved';
-        block.className = 'dev-signoff-block approved';
-      } else {
-        badge.className = 'dev-sig-badge dev-sig-rejected'; badge.textContent = 'Changes requested';
-        block.className = 'dev-signoff-block rejected';
-      }
-    } else {
-      badge.className = 'dev-sig-badge dev-sig-pending'; badge.textContent = 'Pending';
-    }
-  });
-
   devCheckLaunch();
 }
 
-// ── Add recording link ────────────────────────────────────────────────────────
-async function devAddRecording() {
-  const label = document.getElementById('dev-link-label').value.trim();
-  const url   = document.getElementById('dev-link-url').value.trim();
-  if (!label) { document.getElementById('dev-link-label').focus(); return; }
-  if (!url)   { document.getElementById('dev-link-url').focus(); return; }
-
-  const btn = document.querySelector('#dev-add-link-row .dev-btn-primary');
-  btn.disabled = true; btn.textContent = 'Saving…';
-
-  try {
-    await devSbFetch('ivr_recordings', {
-      method: 'POST',
-      body: JSON.stringify({ ivr_id: devCurrentIvr.id, filename: label, filesize: url })
-    });
-    document.getElementById('dev-link-label').value = '';
-    document.getElementById('dev-link-url').value = '';
-    await devOpenDetail(devCurrentIvr.id, true);
-  } catch(e) {
-    alert('Could not save link: ' + e.message);
-  }
-
-  btn.disabled = false; btn.textContent = 'Add link';
+async function devAddRecording(){
+  const label=document.getElementById('dev-link-label').value.trim(),url=document.getElementById('dev-link-url').value.trim();
+  if(!label){document.getElementById('dev-link-label').focus();return;}if(!url){document.getElementById('dev-link-url').focus();return;}
+  const btn=document.querySelector('#dev-add-link-row .dev-btn-primary');btn.disabled=true;btn.textContent='Saving…';
+  try{await devSbFetch('ivr_recordings',{method:'POST',body:JSON.stringify({ivr_id:devCurrentIvr.id,filename:label,filesize:url})});document.getElementById('dev-link-label').value='';document.getElementById('dev-link-url').value='';await devOpenDetail(devCurrentIvr.id,true);}catch(e){alert('Could not save link: '+e.message);}
+  btn.disabled=false;btn.textContent='Add link';
 }
 
-// ── Sign-offs ─────────────────────────────────────────────────────────────────
-async function devSignoff(team, action) {
-  const note = document.getElementById('dev-note-' + team);
-  const hint = document.getElementById('dev-hint-' + team);
-  if (!note.value.trim()) {
-    note.classList.add('dev-note-required');
-    hint.classList.add('visible');
-    note.focus();
-    return;
-  }
-  note.classList.remove('dev-note-required'); hint.classList.remove('visible');
-
-  try {
-    await devSbFetch('ivr_signoffs', {
-      method: 'POST',
-      prefer: 'resolution=merge-duplicates,return=representation',
-      headers: { 'Prefer': 'resolution=merge-duplicates' },
-      body: JSON.stringify({
-        ivr_id: devCurrentIvr.id,
-        team,
-        decision: action,
-        note: note.value.trim()
-      })
-    });
-    devSignoffState[team] = action;
-
-    const badge = document.getElementById('dev-badge-' + team);
-    const block = document.getElementById('dev-sb-' + team);
-    const btnA  = document.getElementById('dev-btn-app-' + team);
-    const btnR  = document.getElementById('dev-btn-rej-' + team);
-    note.disabled = true; btnA.disabled = true; btnR.disabled = true;
-
-    if (action === 'approve') {
-      badge.className = 'dev-sig-badge dev-sig-approved'; badge.textContent = 'Approved';
-      block.className = 'dev-signoff-block approved';
-    } else {
-      badge.className = 'dev-sig-badge dev-sig-rejected'; badge.textContent = 'Changes requested';
-      block.className = 'dev-signoff-block rejected';
-    }
+async function devSignoff(team,action){
+  const note=document.getElementById('dev-note-'+team),hint=document.getElementById('dev-hint-'+team);
+  if(!note.value.trim()){note.classList.add('dev-note-required');hint.classList.add('visible');note.focus();return;}
+  note.classList.remove('dev-note-required');hint.classList.remove('visible');
+  try{
+    await devSbFetch('ivr_signoffs',{method:'POST',prefer:'resolution=merge-duplicates,return=representation',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({ivr_id:devCurrentIvr.id,team,decision:action,note:note.value.trim()})});
+    devSignoffState[team]=action;
+    const badge=document.getElementById('dev-badge-'+team),block=document.getElementById('dev-sb-'+team),btnA=document.getElementById('dev-btn-app-'+team),btnR=document.getElementById('dev-btn-rej-'+team);
+    note.disabled=true;btnA.disabled=true;btnR.disabled=true;
+    if(action==='approve'){badge.className='dev-sig-badge dev-sig-approved';badge.textContent='Approved';block.className='dev-signoff-block approved';}else{badge.className='dev-sig-badge dev-sig-rejected';badge.textContent='Changes requested';block.className='dev-signoff-block rejected';}
     devCheckLaunch();
-
-    // If both approved, update IVR status to 'review'
-    if (devSignoffState.supply === 'approve' && devSignoffState.demand === 'approve') {
-      await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: 'approved' })
-      });
-      devCurrentIvr.status = 'approved';
-      await devLoadIvrs();
-    }
-  } catch(e) {
-    alert('Could not save sign-off: ' + e.message);
-  }
+    if(devSignoffState.supply==='approve'&&devSignoffState.demand==='approve'){await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`,{method:'PATCH',body:JSON.stringify({status:'approved'})});devCurrentIvr.status='approved';await devLoadIvrs();}
+  }catch(e){alert('Could not save sign-off: '+e.message);}
 }
 
-function devCheckLaunch() {
-  const allApproved = devSignoffState.supply === 'approve' && devSignoffState.demand === 'approve';
-  const anyRejected = Object.values(devSignoffState).includes('reject');
-  const pending = Object.values(devSignoffState).filter(v => v === 'pending').length;
-  const btn  = document.getElementById('dev-btn-launch');
-  const gate = document.getElementById('dev-launch-gate');
-  const icon = document.getElementById('dev-gate-icon');
-  const text = document.getElementById('dev-gate-text');
-  if (allApproved) {
-    btn.disabled = false;
-    gate.style.cssText = 'border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;background:var(--teal-bg);color:var(--teal);border:1px solid #5DCAA5;display:flex;align-items:center;gap:8px;margin-top:12px';
-    icon.textContent = '✓'; text.textContent = 'Both teams have approved. Ready to mark for launch.';
-  } else if (anyRejected) {
-    btn.disabled = true;
-    gate.style.cssText = 'border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;display:flex;align-items:center;gap:8px;margin-top:12px';
-    icon.textContent = '✕'; text.textContent = 'Changes have been requested. Resolve before launch.';
-  } else {
-    btn.disabled = true; gate.style.cssText = '';
-    icon.textContent = '⏳'; text.textContent = `Waiting for ${pending} more sign-off${pending !== 1 ? 's' : ''} before launch is available.`;
-  }
+function devCheckLaunch(){
+  const allApproved=devSignoffState.supply==='approve'&&devSignoffState.demand==='approve';
+  const anyRejected=Object.values(devSignoffState).includes('reject');
+  const pending=Object.values(devSignoffState).filter(v=>v==='pending').length;
+  const btn=document.getElementById('dev-btn-launch'),gate=document.getElementById('dev-launch-gate'),icon=document.getElementById('dev-gate-icon'),text=document.getElementById('dev-gate-text');
+  if(allApproved){btn.disabled=false;gate.style.cssText='border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;background:var(--teal-bg);color:var(--teal);border:1px solid #5DCAA5;display:flex;align-items:center;gap:8px;margin-top:12px';icon.textContent='✓';text.textContent='Both teams have approved. Ready to mark for launch.';}
+  else if(anyRejected){btn.disabled=true;gate.style.cssText='border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;display:flex;align-items:center;gap:8px;margin-top:12px';icon.textContent='✕';text.textContent='Changes have been requested. Resolve before launch.';}
+  else{btn.disabled=true;gate.style.cssText='';icon.textContent='⏳';text.textContent=`Waiting for ${pending} more sign-off${pending!==1?'s':''} before launch is available.`;}
 }
 
-async function devMarkLive() {
-  if (!devCurrentIvr) return;
-  try {
-    await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status: 'live' })
-    });
-    devCloseModal('dev-modal-detail');
-    await devLoadIvrs();
-  } catch(e) {
-    alert('Could not update status: ' + e.message);
-  }
+async function devMarkLive(){
+  if(!devCurrentIvr)return;
+  try{await devSbFetch(`ivr_development?id=eq.${devCurrentIvr.id}`,{method:'PATCH',body:JSON.stringify({status:'live'})});devCloseModal('dev-modal-detail');await devLoadIvrs();}catch(e){alert('Could not update status: '+e.message);}
 }
 
-// ── Delete ────────────────────────────────────────────────────────────────────
-function devConfirmDelete(ivrId, name) {
-  devDeleteTarget = ivrId;
-  document.getElementById('dev-confirm-name').textContent = name;
-  document.querySelectorAll('.dev-dropdown').forEach(d => d.classList.remove('open'));
-  devOpenModal('dev-modal-confirm');
-}
+function devConfirmDelete(ivrId,name){devDeleteTarget=ivrId;document.getElementById('dev-confirm-name').textContent=name;document.querySelectorAll('.dev-dropdown').forEach(d=>d.classList.remove('open'));devOpenModal('dev-modal-confirm');}
 
-async function devDoDelete() {
-  if (!devDeleteTarget) return;
-  try {
-    await devSbFetch(`ivr_development?id=eq.${devDeleteTarget}`, { method: 'DELETE', prefer: '' });
-    devDeleteTarget = null;
-    devCloseModal('dev-modal-confirm');
-    await devLoadIvrs();
-  } catch(e) {
-    alert('Could not delete: ' + e.message);
-  }
+async function devDoDelete(){
+  if(!devDeleteTarget)return;
+  try{await devSbFetch(`ivr_development?id=eq.${devDeleteTarget}`,{method:'DELETE',prefer:''});devDeleteTarget=null;devCloseModal('dev-modal-confirm');await devLoadIvrs();}catch(e){alert('Could not delete: '+e.message);}
 }
 
 // ─── BOOT ────────────────────────────────────────────────────────────────────
@@ -2336,8 +1408,10 @@ recomputeStats();
 populateAgentSelect();
 applyFilters();
 document.getElementById('bq-sql').textContent = buildBQSQL();
-// Default to last 30 days — triggers Supabase load
-setTimeout(() => setPreset(30, document.querySelector('.preset-btn[onclick*="30"]')), 0);
+// Load test calls first, then kick off the data load
+loadTestCalls().then(() => {
+  setTimeout(() => setPreset(30, document.querySelector('.preset-btn[onclick*="30"]')), 0);
+});
 </script>
 </body>
 </html>
